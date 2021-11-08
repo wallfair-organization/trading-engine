@@ -1,5 +1,4 @@
 import { ConnectionOptions } from 'typeorm';
-console.log(__dirname);
 
 const config: ConnectionOptions = {
   type: 'postgres',
