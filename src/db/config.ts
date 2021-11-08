@@ -3,12 +3,12 @@ console.log(__dirname);
 
 const config: ConnectionOptions = {
   type: 'postgres',
-  host: process.env.TYPEORM_HOST,
-  port: +process.env.TYPEORM_PORT,
-  username: process.env.TYPEORM_USERNAME,
-  password: process.env.TYPEORM_PASSWORD,
-  database: process.env.TYPEORM_DATABASE,
-  ssl: false,
+  host: process.env.POSTGRES_HOST,
+  port: +process.env.POSTGRES_PORT,
+  username: process.env.POSTGRES_USER,
+  password: process.env.POSTGRES_PASSWORD,
+  database: process.env.POSTGRES_DB,
+  ssl: process.env.POSTGRES_DISABLE_SSL !== 'true',
 
   migrationsRun: true,
   synchronize: true,
