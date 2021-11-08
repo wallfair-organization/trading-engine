@@ -9,8 +9,7 @@
   "license": "AGPL-3.0",
   "keywords": [],
   "scripts": {
-    "build": "run-p build:*",
-    "build:main": "rm -rf ./build && tsc -p tsconfig.json",
+    "build": "rm -rf ./build && tsc -p tsconfig.json",
     "cov": "run-s build test:unit cov:html cov:lcov && open-cli coverage/index.html",
     "cov:check": "nyc report && nyc check-coverage --lines 90 --functions 90 --branches 90",
     "cov:html": "nyc report --reporter=html",
@@ -70,7 +69,7 @@
     "typescript": "^4.4.2"
   },
   "files": [
-    "build/main",
+    "build/src",
     "build/module",
     "!**/*.spec.*",
     "!**/*.json",
@@ -83,7 +82,7 @@
     "timeout": "60s",
     "typescript": {
       "rewritePaths": {
-        "src/": "build/main/"
+        "src/": "build/src/"
       }
     },
     "files": [

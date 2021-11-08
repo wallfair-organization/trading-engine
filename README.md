@@ -49,6 +49,12 @@ npm run migration:run
 npm run schema:drop
 ```
 
+- Generate trading-engine codebase documentation
+
+```sh
+npm run doc
+```
+
 ## Usage
 
 TODO: Add future usage definitions of what library is all around.
