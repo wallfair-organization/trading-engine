@@ -13,6 +13,7 @@ Trading engine package to be used for Wallfair trading related microservices
 | POSTGRES_PORT        | 5432          | 5432          |
 | POSTGRES_DISABLE_SSL |               | true          |
 | POSTGRES_CA          |               | TBD           |
+| DB_QUERY_LOGGING     |               | true          |
 
 For convenience, a `.env.example` is provided. This file can be renamed to `.env` and adjusted.
 

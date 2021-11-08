@@ -10,8 +10,7 @@ const config: ConnectionOptions = {
   ssl: process.env.POSTGRES_DISABLE_SSL !== 'true',
 
   migrationsRun: true,
-  synchronize: true,
-  logging: true,
+  logging: process.env.DB_QUERY_LOGGING === 'true',
 
   entities: [__dirname + '/entities/*{.ts,.js}'],
   migrations: [__dirname + '/migrations/*{.ts,.js}'],
