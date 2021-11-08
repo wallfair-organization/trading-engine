@@ -12,6 +12,13 @@
     "build": "run-p build:*",
     "build:main": "tsc -p tsconfig.json",
     "build:module": "tsc -p tsconfig.module.json",
+    "cov": "run-s build test:unit cov:html cov:lcov && open-cli coverage/index.html",
+    "cov:check": "nyc report && nyc check-coverage --lines 90 --functions 90 --branches 90",
+    "cov:html": "nyc report --reporter=html",
+    "cov:lcov": "nyc report --reporter=lcov",
+    "doc": "run-s doc:html && open-cli build/docs/index.html",
+    "doc:html": "typedoc src/ --exclude **/*.spec.ts --target ES6 --mode file --out build/docs",
+    "doc:json": "typedoc src/ --exclude **/*.spec.ts --target ES6 --mode file --json build/docs/typedoc.json",
     "fix": "run-s fix:*",
     "fix:prettier": "prettier \"src/**/*.ts\" --write",
     "fix:lint": "eslint src --ext .ts --fix",
@@ -27,7 +34,7 @@
     "watch:build": "tsc -p tsconfig.json -w",
     "watch:test": "nyc --silent ava --watch",
     "version": "standard-version",
-    "prepare-husky": "run-s fix test",
+    "prepare-husky": "run-s fix test:lint cov",
     "prepare-release": "run-s test cov:check version"
   },
   "engines": {
@@ -60,6 +67,7 @@
     "prettier": "^2.1.1",
     "standard-version": "^9.0.0",
     "ts-node": "^9.0.0",
+    "typedoc": "^0.19.0",
     "typescript": "^4.4.2"
   },
   "files": [
