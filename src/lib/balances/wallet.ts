@@ -1,29 +1,20 @@
-import { getRepository, Repository } from "typeorm";
+import { getConnection, getRepository } from "typeorm";
 import { UserAccount } from "../../db/entities/UserAccount";
 import { Account } from "../../db/entities/Account";
 import { Beneficiary } from "../models/beneficiary";
-import { queryRunner } from "../main";
 
 export class Wallet {
   one: number;
-  accountRepository: Repository<Account>;
-  userAccountRepository: Repository<UserAccount>;
 
   constructor() {
     this.one = 10 ** 18;
-    this.accountRepository = getRepository(Account);
-    this.userAccountRepository = getRepository(UserAccount);
   }
 
   async getBalance(userId: string) {
-    try {
-      const userAccount = await this.userAccountRepository
-        .findOneOrFail({ where: { user_id: userId }, relations: ['account'] });
-      return userAccount.account.balance;
-    } catch (e) {
-      console.error(e);
-      throw new ModuleException('Failed to fetch balance');
-    }
+    const accountRepository = getRepository(UserAccount);
+    const userAccount = await accountRepository
+      .findOne({ where: { user_id: userId }, relations: ['account'] });
+    return userAccount.account.balance / this.one;
   }
 
   async mint(beneficiary: Beneficiary, amount) {
@@ -33,8 +24,8 @@ export class Wallet {
 
     try {
       const account = await this.findAccount(beneficiary);
-
-      await this.accountRepository.save({
+      const accountRepository = getRepository(Account);
+      await accountRepository.save({
         ...account,
         balance: account.balance + amount
       });
@@ -57,7 +48,8 @@ export class Wallet {
         -- Owner: ${beneficiary.owner} owns: ${account.balance} burns: ${amount}`);
       }
 
-      await this.accountRepository.save({
+      const accountRepository = getRepository(Account);
+      await accountRepository.save({
         ...account,
         balance: newBalance,
       });
@@ -81,6 +73,7 @@ export class Wallet {
 
       const receiverAccount = await this.findAccount(receiver);
 
+      const queryRunner = getConnection().createQueryRunner();
       await queryRunner.startTransaction();
       await queryRunner.manager.save({
         ...senderAccount,
@@ -97,7 +90,8 @@ export class Wallet {
   }
 
   private async findAccount(beneficiary: Beneficiary): Promise<Account> {
-    return await this.accountRepository.findOneOrFail({ where: { 
+    const accountRepository = getRepository(Account);
+    return await accountRepository.findOneOrFail({ where: { 
       owner_account: beneficiary.owner,
       account_namespace: beneficiary.namespace,
       symbol: beneficiary.symbol,
