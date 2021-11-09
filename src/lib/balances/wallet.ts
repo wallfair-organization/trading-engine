@@ -11,10 +11,15 @@ export class Wallet {
   }
 
   async getBalance(userId: string) {
-    const accountRepository = getRepository(UserAccount);
-    const userAccount = await accountRepository
-      .findOne({ where: { user_id: userId }, relations: ['account'] });
-    return userAccount.account.balance / this.one;
+    try {
+      const userAccountRepository = getRepository(UserAccount);
+      const userAccount = await userAccountRepository
+        .findOneOrFail({ where: { user_id: userId }, relations: ['account'] });
+      return userAccount.account.balance;
+    } catch (e) {
+      console.error(e);
+      throw new ModuleException('Failed to fetch balance');
+    }
   }
 
   async mint(beneficiary: Beneficiary, amount) {
