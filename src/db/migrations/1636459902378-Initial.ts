@@ -1,10 +1,10 @@
 import {MigrationInterface, QueryRunner} from "typeorm";
 
-export class Initial1636411493071 implements MigrationInterface {
-    name = 'Initial1636411493071'
+export class Initial1636459902378 implements MigrationInterface {
+    name = 'Initial1636459902378'
 
     public async up(queryRunner: QueryRunner): Promise<void> {
-        await queryRunner.query(`CREATE TABLE "user_account" ("user_id" uuid NOT NULL, "owner_account" character varying NOT NULL, "account_namespace" "public"."account_namespace_enum" NOT NULL, "symbol" character varying NOT NULL, CONSTRAINT "PK_1e7af5387f4169347ddef6e8180" PRIMARY KEY ("user_id"))`);
+        await queryRunner.query(`CREATE TABLE "user_account" ("user_id" character varying NOT NULL, "owner_account" character varying NOT NULL, "account_namespace" "public"."account_namespace_enum" NOT NULL, "symbol" character varying NOT NULL, CONSTRAINT "PK_1e7af5387f4169347ddef6e8180" PRIMARY KEY ("user_id"))`);
         await queryRunner.query(`CREATE TABLE "account" ("owner_account" character varying NOT NULL, "account_namespace" "public"."account_namespace_enum" NOT NULL, "symbol" character varying NOT NULL, "balance" numeric(18,0) NOT NULL, CONSTRAINT "PK_8ec3dedb1ee17a8630a7c57b0f9" PRIMARY KEY ("owner_account", "account_namespace", "symbol"))`);
         await queryRunner.query(`CREATE TABLE "external_transaction" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "originator" "public"."external_transaction_originator" NOT NULL, "external_system" character varying NOT NULL, "status" "public"."external_transaction_status" NOT NULL, "external_transaction_id" character varying NOT NULL, "created_at" TIMESTAMP NOT NULL DEFAULT now(), "updated_at" TIMESTAMP NOT NULL DEFAULT now(), CONSTRAINT "PK_169d396061ffd3ef349913de2c6" PRIMARY KEY ("id"))`);
         await queryRunner.query(`CREATE INDEX "IDX_c8e032f5ff9f890a40d328e786" ON "external_transaction" ("originator") `);
