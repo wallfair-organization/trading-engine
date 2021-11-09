@@ -1,4 +1,4 @@
-import { getRepository } from "typeorm";
+import { getRepository, Repository } from "typeorm";
 import { UserAccount } from "../../db/entities/UserAccount";
 import { Account } from "../../db/entities/Account";
 import { Beneficiary } from "../models/beneficiary";
@@ -6,16 +6,24 @@ import { queryRunner } from "../main";
 
 export class Wallet {
   one: number;
+  accountRepository: Repository<Account>;
+  userAccountRepository: Repository<UserAccount>;
 
   constructor() {
     this.one = 10 ** 18;
+    this.accountRepository = getRepository(Account);
+    this.userAccountRepository = getRepository(UserAccount);
   }
 
   async getBalance(userId: string) {
-    const accountRepository = getRepository(UserAccount);
-    const userAccount = await accountRepository
-      .findOne({ where: { user_id: userId }, relations: ['account'] });
-    return userAccount.account.balance / this.one;
+    try {
+      const userAccount = await this.userAccountRepository
+        .findOneOrFail({ where: { user_id: userId }, relations: ['account'] });
+      return userAccount.account.balance;
+    } catch (e) {
+      console.error(e);
+      throw new ModuleException('Failed to fetch balance');
+    }
   }
 
   async mint(beneficiary: Beneficiary, amount) {
@@ -24,14 +32,9 @@ export class Wallet {
     }
 
     try {
-      const accountRepository = getRepository(Account);
-      const account = await accountRepository.findOne({ where: { 
-        owner_account: beneficiary.owner,
-        account_namespace: beneficiary.namespace,
-        symbol: beneficiary.symbol,
-      }});
+      const account = await this.findAccount(beneficiary);
 
-      await accountRepository.save({
+      await this.accountRepository.save({
         ...account,
         balance: account.balance + amount
       });
@@ -46,13 +49,7 @@ export class Wallet {
     }
 
     try {
-      const accountRepository = getRepository(Account);
-      const account = await accountRepository.findOne({ where: { 
-        owner_account: beneficiary.owner,
-        account_namespace: beneficiary.namespace,
-        symbol: beneficiary.symbol,
-      }});
-
+      const account = await this.findAccount(beneficiary);
       const newBalance = account.balance - amount;
 
       if (newBalance < 0) {
@@ -60,7 +57,7 @@ export class Wallet {
         -- Owner: ${beneficiary.owner} owns: ${account.balance} burns: ${amount}`);
       }
 
-      await accountRepository.save({
+      await this.accountRepository.save({
         ...account,
         balance: newBalance,
       });
@@ -75,23 +72,14 @@ export class Wallet {
     }
 
     try {
-      const accountRepository = getRepository(Account);
-      const senderAccount = await accountRepository.findOne({ where: { 
-        owner_account: sender.owner,
-        account_namespace: sender.namespace,
-        symbol: sender.symbol,
-      }});
+      const senderAccount = await this.findAccount(sender);
 
       if (senderAccount.balance < amount) {
         throw new ModuleException(`Sender can't spend more than it owns! 
         Sender: ${sender} -- Receiver: ${receiver} -- senderBalance: ${senderAccount.balance} -- amount: ${amount}`);
       }
 
-      const receiverAccount = await accountRepository.findOne({ where: { 
-        owner_account: receiver.owner,
-        account_namespace: receiver.namespace,
-        symbol: receiver.symbol, 
-      }});
+      const receiverAccount = await this.findAccount(receiver);
 
       await queryRunner.startTransaction();
       await queryRunner.manager.save({
@@ -106,5 +94,13 @@ export class Wallet {
     } catch (e) {
       throw new ModuleException(e.message);
     }
+  }
+
+  private async findAccount(beneficiary: Beneficiary): Promise<Account> {
+    return await this.accountRepository.findOneOrFail({ where: { 
+      owner_account: beneficiary.owner,
+      account_namespace: beneficiary.namespace,
+      symbol: beneficiary.symbol,
+    }});
   }
 };
