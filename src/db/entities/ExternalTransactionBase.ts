@@ -35,4 +35,11 @@ export abstract class ExternalTransactionBase {
 
   @UpdateDateColumn()
   updated_at: Date;
+
+  assignAttributes(attributes) {
+    this.originator = attributes.originator;
+    this.external_system = attributes.external_system;
+    this.status = attributes.status;
+    this.external_transaction_id = attributes.external_transaction_id;
+  }
 };

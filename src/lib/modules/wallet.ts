@@ -35,6 +35,7 @@ export class Wallet {
         balance: account.balance + amount
       });
     } catch (e) {
+      console.error('MINT ERROR: ', e.message);
       throw new ModuleException('Minting failed');
     }
   }
@@ -59,6 +60,7 @@ export class Wallet {
         balance: newBalance,
       });
     } catch (e) {
+      console.error('BURN ERROR: ', e.message);
       throw new ModuleException(e.message);
     }
   }
@@ -90,6 +92,7 @@ export class Wallet {
       });
       await queryRunner.commitTransaction();
     } catch (e) {
+      console.error('TRANSFER ERROR: ', e.message);
       throw new ModuleException(e.message);
     }
   }
