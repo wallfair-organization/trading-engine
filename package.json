@@ -39,6 +39,7 @@
     "node": ">=10"
   },
   "dependencies": {
+    "bignumber.js": "^9.0.1",
     "pg": "^8.6.0",
     "reflect-metadata": "^0.1.13",
     "typeorm": "^0.2.38"

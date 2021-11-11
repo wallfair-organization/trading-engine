@@ -17,8 +17,8 @@ export class Account {
   @PrimaryColumn()
   symbol: string;
 
-  @Column({ type: 'decimal', precision: 18, scale: 0, nullable: false })
-  balance: number;
+  @Column({ type: 'decimal', nullable: false })
+  balance: string;
 
   @OneToMany(() => UserAccount, (userAccount) => userAccount.account)
   user_accounts: UserAccount[];

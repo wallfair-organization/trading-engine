@@ -33,8 +33,8 @@ export class Transaction {
   @Column({ nullable: false })
   symbol: string;
 
-  @Column({ type: 'decimal', precision: 18, scale: 0, nullable: false })
-  amount: number;
+  @Column({ type: 'decimal', nullable: false })
+  amount: string;
 
   @CreateDateColumn()
   executed_at: Date;
