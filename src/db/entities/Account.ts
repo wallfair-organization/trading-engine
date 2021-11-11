@@ -1,4 +1,4 @@
-import {Column, Entity, OneToMany, PrimaryColumn} from "typeorm";
+import {Column, CreateDateColumn, Entity, OneToMany, PrimaryColumn, UpdateDateColumn} from "typeorm";
 import { AccountNamespace } from "../enums/AccountNamespace";
 import { UserAccount } from "./UserAccount";
 
@@ -22,4 +22,10 @@ export class Account {
 
   @OneToMany(() => UserAccount, (userAccount) => userAccount.account)
   user_accounts: UserAccount[];
+
+  @CreateDateColumn()
+  created_at: Date;
+
+  @UpdateDateColumn()
+  updated_at: Date;
 }
