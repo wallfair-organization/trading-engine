@@ -2,6 +2,7 @@ import { getConnection, getRepository } from "typeorm";
 import { UserAccount } from "../../db/entities/UserAccount";
 import { Account } from "../../db/entities/Account";
 import { Beneficiary } from "../models/beneficiary";
+import BigNumber from "bignumber.js";
 
 export class Wallet {
   one: number;
@@ -32,7 +33,7 @@ export class Wallet {
       const accountRepository = getRepository(Account);
       await accountRepository.save({
         ...account,
-        balance: account.balance + amount
+        balance: new BigNumber(account.balance).plus(new BigNumber(amount)).toString() 
       });
     } catch (e) {
       console.error('MINT ERROR: ', e.message);
@@ -47,9 +48,9 @@ export class Wallet {
 
     try {
       const account = await this.findAccount(beneficiary);
-      const newBalance = account.balance - amount;
+      const newBalance = new BigNumber(account.balance).minus(new BigNumber(amount));
 
-      if (newBalance < 0) {
+      if (newBalance.isNegative()) {
         throw new ModuleException(`Owner can't burn more than it owns!
         -- Owner: ${beneficiary.owner} owns: ${account.balance} burns: ${amount}`);
       }
@@ -57,7 +58,7 @@ export class Wallet {
       const accountRepository = getRepository(Account);
       await accountRepository.save({
         ...account,
-        balance: newBalance,
+        balance: newBalance.toString(),
       });
     } catch (e) {
       console.error('BURN ERROR: ', e.message);
@@ -65,15 +66,18 @@ export class Wallet {
     }
   }
 
-  async transfer(sender: Beneficiary, receiver: Beneficiary, amount) {
-    if (amount <= 0) {
+  async transfer(sender: Beneficiary, receiver: Beneficiary, amountToTransfer) {
+    const amount = new BigNumber(amountToTransfer);
+
+    if (amount.isNegative() || amount.isZero()) {
       throw new ModuleException('Amount validation failed');
     }
 
     try {
       const senderAccount = await this.findAccount(sender);
+      const senderBalance = new BigNumber(senderAccount.balance);
 
-      if (senderAccount.balance < amount) {
+      if (senderBalance.isLessThan(amount)) {
         throw new ModuleException(`Sender can't spend more than it owns! 
         Sender: ${sender} -- Receiver: ${receiver} -- senderBalance: ${senderAccount.balance} -- amount: ${amount}`);
       }
@@ -84,11 +88,11 @@ export class Wallet {
       await queryRunner.startTransaction();
       await queryRunner.manager.save({
         ...senderAccount,
-        balance: senderAccount.balance - amount
+        balance: senderBalance.minus(amount).toString()
       });
       await queryRunner.manager.save({
         ...receiverAccount,
-        balance: receiverAccount.balance + amount
+        balance: senderBalance.plus(amount).toString()
       });
       await queryRunner.commitTransaction();
     } catch (e) {
