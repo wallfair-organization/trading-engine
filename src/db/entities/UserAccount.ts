@@ -1,4 +1,4 @@
-import {Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
+import {CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn, UpdateDateColumn } from "typeorm";
 import { Account } from "./Account";
 
 @Entity()
@@ -13,4 +13,10 @@ export class UserAccount {
     { name: 'symbol', referencedColumnName: 'symbol' }
   ])
   account: Account;
+
+  @CreateDateColumn()
+  created_at: Date;
+
+  @UpdateDateColumn()
+  updated_at: Date;
 }

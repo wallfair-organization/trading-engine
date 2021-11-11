@@ -1,7 +1,7 @@
 class ModuleException extends Error {
   message: string;
 
-  constructor(message) {
+  constructor(message: string) {
     super(message);
     this.message = message;
   }
