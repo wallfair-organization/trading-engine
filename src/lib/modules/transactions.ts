@@ -18,7 +18,9 @@ export class Transactions {
     }
   }
 
-  async insertExternalTransaction(externalTransaction: ExternalTransactionModel) {
+  async insertExternalTransaction(
+    externalTransaction: ExternalTransactionModel
+  ) {
     try {
       const transactionRepo = getRepository(ExternalTransaction);
       const entity = new ExternalTransaction();
@@ -33,19 +35,26 @@ export class Transactions {
   async getExternalTransaction(id: string) {
     try {
       const transactionRepo = getRepository(ExternalTransaction);
-      return await transactionRepo.findOne({ where: { external_transaction_id: id } });
+      return await transactionRepo.findOne({
+        where: { external_transaction_id: id },
+      });
     } catch (e) {
       console.error('ERROR: ', e.message);
       throw new ModuleException(e.message);
     }
   }
 
-  async updateExternalTransactionStatus(id: string, status: ExternalTransactionStatus) {
+  async updateExternalTransactionStatus(
+    id: string,
+    status: ExternalTransactionStatus
+  ) {
     try {
       const transactionRepo = getRepository(ExternalTransaction);
-      const entity = await transactionRepo.findOneOrFail({ where: {
-        external_transaction_id: id
-      }});
+      const entity = await transactionRepo.findOneOrFail({
+        where: {
+          external_transaction_id: id,
+        },
+      });
 
       await transactionRepo.save({
         ...entity,

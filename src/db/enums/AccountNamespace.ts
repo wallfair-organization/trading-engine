@@ -3,5 +3,5 @@ export enum AccountNamespace {
   ETH = 'eth', // ethereum
   BET = 'bet', // trading
   TDL = 'tdl', // tradelite games
-  CAS = 'cas'  // casino (internal games)
-};
+  CAS = 'cas', // casino (internal games)
+}

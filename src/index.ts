@@ -2,6 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import 'reflect-metadata';
+
 export * from './lib/main';
-export * from './lib/modules';
-export * from './lib/models';
+export { Beneficiary, ExternalTransaction, Transaction } from './lib/models';
+export { Wallet, Transactions } from './lib/modules';

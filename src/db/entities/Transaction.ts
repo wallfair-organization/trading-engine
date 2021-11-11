@@ -1,5 +1,11 @@
-import {Column, CreateDateColumn, Entity, Index, PrimaryGeneratedColumn} from "typeorm";
-import { AccountNamespace } from "../enums/AccountNamespace";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  Index,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { AccountNamespace } from '../enums/AccountNamespace';
 
 @Entity()
 export class Transaction {
@@ -10,7 +16,7 @@ export class Transaction {
     nullable: false,
     type: 'enum',
     enumName: 'account_namespace_enum',
-    enum: AccountNamespace
+    enum: AccountNamespace,
   })
   sender_namespace: AccountNamespace;
 
@@ -22,7 +28,7 @@ export class Transaction {
     nullable: false,
     type: 'enum',
     enumName: 'account_namespace_enum',
-    enum: AccountNamespace
+    enum: AccountNamespace,
   })
   receiver_namespace: AccountNamespace;
 

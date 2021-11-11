@@ -1,6 +1,12 @@
-import { Column, CreateDateColumn, Index, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { ExternalTransactionOriginator } from "../enums/ExternalTransactionOriginator";
-import { ExternalTransactionStatus } from "../enums/ExternalTransactionStatus";
+import {
+  Column,
+  CreateDateColumn,
+  Index,
+  PrimaryGeneratedColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { ExternalTransactionOriginator } from '../enums/ExternalTransactionOriginator';
+import { ExternalTransactionStatus } from '../enums/ExternalTransactionStatus';
 
 export abstract class ExternalTransactionBase {
   @PrimaryGeneratedColumn('uuid')
@@ -10,7 +16,7 @@ export abstract class ExternalTransactionBase {
     nullable: false,
     type: 'enum',
     enumName: 'external_transaction_originator',
-    enum: ExternalTransactionOriginator
+    enum: ExternalTransactionOriginator,
   })
   @Index()
   originator: string;
@@ -18,11 +24,11 @@ export abstract class ExternalTransactionBase {
   @Column({ nullable: false })
   external_system: string;
 
-  @Column({ 
+  @Column({
     nullable: false,
     type: 'enum',
     enumName: 'external_transaction_status',
-    enum: ExternalTransactionStatus
+    enum: ExternalTransactionStatus,
   })
   @Index()
   status: string;
@@ -42,4 +48,4 @@ export abstract class ExternalTransactionBase {
     this.status = attributes.status;
     this.external_transaction_id = attributes.external_transaction_id;
   }
-};
+}

@@ -4,14 +4,12 @@
   "description": "Trading engine package to be used for Wallfair trading related microservices",
   "main": "build/src/index.js",
   "typings": "build/src/index.d.ts",
-  "module": "build/src/index.js",
   "repository": "https://github.com/wallfair-organization/trading-engine",
   "license": "AGPL-3.0",
-  "keywords": [],
   "scripts": {
     "build": "rm -rf ./build && tsc -p tsconfig.json",
     "cov": "run-s build test:unit cov:html cov:lcov && open-cli coverage/index.html",
-    "cov:check": "nyc report && nyc check-coverage --lines 90 --functions 90 --branches 90",
+    "cov:check": "nyc report && nyc check-coverage --lines 50 --functions 50 --branches 50",
     "cov:html": "nyc report --reporter=html",
     "cov:lcov": "nyc report --reporter=lcov",
     "doc": "run-s doc:html && open-cli build/docs/index.html",
@@ -57,7 +55,6 @@
     "eslint": "^7.8.0",
     "eslint-config-prettier": "^6.11.0",
     "eslint-plugin-eslint-comments": "^3.2.0",
-    "eslint-plugin-functional": "^3.0.2",
     "eslint-plugin-import": "^2.22.0",
     "husky": "^7.0.4",
     "npm-run-all": "^4.1.5",
@@ -71,10 +68,8 @@
   },
   "files": [
     "build/src",
-    "build/module",
     "!**/*.spec.*",
     "!**/*.json",
-    "CHANGELOG.md",
     "LICENSE",
     "README.md"
   ],
@@ -85,10 +80,7 @@
       "rewritePaths": {
         "src/": "build/src/"
       }
-    },
-    "files": [
-      "!build/module/**"
-    ]
+    }
   },
   "config": {
     "commitizen": {

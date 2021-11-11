@@ -3,5 +3,5 @@ export enum ExternalTransactionStatus {
   PROCESSING = 'processing',
   SCHEDULED = 'scheduled',
   COMPLETED = 'completed',
-  FAILED = 'failed'
-};
+  FAILED = 'failed',
+}

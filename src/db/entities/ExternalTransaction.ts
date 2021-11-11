@@ -1,6 +1,5 @@
-import { Entity } from "typeorm";
-import { ExternalTransactionBase } from "./ExternalTransactionBase";
+import { Entity } from 'typeorm';
+import { ExternalTransactionBase } from './ExternalTransactionBase';
 
 @Entity()
-export class ExternalTransaction extends ExternalTransactionBase {
-}
+export class ExternalTransaction extends ExternalTransactionBase {}

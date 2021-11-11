@@ -1,6 +1,13 @@
-import {Column, CreateDateColumn, Entity, OneToMany, PrimaryColumn, UpdateDateColumn} from "typeorm";
-import { AccountNamespace } from "../enums/AccountNamespace";
-import { UserAccount } from "./UserAccount";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryColumn,
+  UpdateDateColumn,
+} from 'typeorm';
+import { AccountNamespace } from '../enums/AccountNamespace';
+import { UserAccount } from './UserAccount';
 
 @Entity()
 export class Account {
@@ -10,7 +17,7 @@ export class Account {
   @PrimaryColumn({
     type: 'enum',
     enumName: 'account_namespace_enum',
-    enum: AccountNamespace
+    enum: AccountNamespace,
   })
   account_namespace: AccountNamespace;
 
