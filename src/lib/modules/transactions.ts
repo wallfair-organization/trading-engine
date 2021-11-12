@@ -1,7 +1,6 @@
 import { EntityManager } from 'typeorm';
 import { ExternalTransaction } from '../../db/entities/ExternalTransaction';
 import { Transaction } from '../../db/entities/Transaction';
-import { ExternalTransactionStatus } from '../../db/enums/ExternalTransactionStatus';
 import { ExternalTransaction as ExternalTransactionModel } from '../models';
 import { Transaction as TransactionModel } from '../models/transaction';
 import { BaseModule } from './base-module';
@@ -57,7 +56,7 @@ export class Transactions extends BaseModule {
 
   async updateExternalTransactionStatus(
     id: string,
-    status: ExternalTransactionStatus
+    status: string
   ) {
     try {
       await this.entityManager.update(ExternalTransaction, {
