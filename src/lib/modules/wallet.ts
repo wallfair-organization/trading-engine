@@ -1,27 +1,35 @@
-import { getConnection, getRepository } from 'typeorm';
-import { UserAccount } from '../../db/entities/UserAccount';
-import { Account } from '../../db/entities/Account';
-import { Beneficiary } from '../models/beneficiary';
-import BigNumber from 'bignumber.js';
+import { EntityManager } from "typeorm";
+import { UserAccount } from "../../db/entities/UserAccount";
+import { Account } from "../../db/entities/Account";
+import { Beneficiary } from "../models/beneficiary";
+import BigNumber from "bignumber.js";
+import { BaseModule } from "./base-module";
+import { ModuleException } from "./exceptions/module-exception";
 
-export class Wallet {
+export class Wallet extends BaseModule {
   one: number;
 
-  constructor() {
+  constructor(entityManager?: EntityManager) {
+    super(entityManager);
     this.one = 10 ** 18;
   }
 
   async getBalance(userId: string) {
     try {
-      const userAccountRepository = getRepository(UserAccount);
-      const userAccount = await userAccountRepository.findOneOrFail({
-        where: { user_id: userId },
-        relations: ['account'],
-      });
+      const userAccount = await this.entityManager
+        .findOneOrFail(UserAccount, {
+          where: { user_id: userId },
+          relations: ['account']
+        });
       return userAccount.account.balance;
     } catch (e) {
-      console.error(e);
+      console.error("GET BALANCE ERROR: ", e.message);
+      await this.rollbackTransaction();
       throw new ModuleException('Failed to fetch balance');
+    } finally {
+      if (!this.entityManager.queryRunner.isTransactionActive) {
+        this.entityManager.release();
+      }
     }
   }
 
@@ -31,17 +39,17 @@ export class Wallet {
     }
 
     try {
-      const account = await this.findAccount(beneficiary);
-      const accountRepository = getRepository(Account);
-      await accountRepository.save({
-        ...account,
-        balance: new BigNumber(account.balance)
-          .plus(new BigNumber(amount))
-          .toString(),
-      });
+      let account = await this.findAccount(beneficiary);
+      account.balance = new BigNumber(account.balance).plus(new BigNumber(amount)).toString();
+      await this.entityManager.save(account);
     } catch (e) {
-      console.error('MINT ERROR: ', e.message);
-      throw new ModuleException('Minting failed');
+      console.error("MINTING ERROR: ", e.message);
+      await this.rollbackTransaction();
+      throw new ModuleException('Failed to fetch balance');
+    } finally {
+      if (!this.entityManager.queryRunner.isTransactionActive) {
+        this.entityManager.release();
+      }
     }
   }
 
@@ -61,14 +69,18 @@ export class Wallet {
         -- Owner: ${beneficiary.owner} owns: ${account.balance} burns: ${amount}`);
       }
 
-      const accountRepository = getRepository(Account);
-      await accountRepository.save({
+      await this.entityManager.save(Account, {
         ...account,
         balance: newBalance.toString(),
       });
     } catch (e) {
       console.error('BURN ERROR: ', e.message);
+      await this.rollbackTransaction();
       throw new ModuleException(e.message);
+    } finally {
+      if (!this.entityManager.queryRunner.isTransactionActive) {
+        this.entityManager.release();
+      }
     }
   }
 
@@ -90,31 +102,36 @@ export class Wallet {
 
       const receiverAccount = await this.findAccount(receiver);
 
-      const queryRunner = getConnection().createQueryRunner();
-      await queryRunner.startTransaction();
-      await queryRunner.manager.save({
+      if (!this.entityManager.queryRunner.isTransactionActive)
+        await this.entityManager.queryRunner.startTransaction();
+
+      await this.entityManager.save(Account, {
         ...senderAccount,
         balance: senderBalance.minus(amount).toString(),
       });
-      await queryRunner.manager.save({
+      await this.entityManager.save(Account, {
         ...receiverAccount,
-        balance: senderBalance.plus(amount).toString(),
+        balance: new BigNumber(receiverAccount.balance).plus(amount).toString()
       });
-      await queryRunner.commitTransaction();
+
+      if (this.entityManager.queryRunner.isTransactionActive)
+        await this.entityManager.queryRunner.commitTransaction();
     } catch (e) {
       console.error('TRANSFER ERROR: ', e.message);
+      await this.rollbackTransaction();
       throw new ModuleException(e.message);
+    } finally {
+      if (!this.entityManager.queryRunner.isTransactionActive) {
+        this.entityManager.release();
+      }
     }
   }
 
   private async findAccount(beneficiary: Beneficiary): Promise<Account> {
-    const accountRepository = getRepository(Account);
-    return await accountRepository.findOneOrFail({
-      where: {
-        owner_account: beneficiary.owner,
-        account_namespace: beneficiary.namespace,
-        symbol: beneficiary.symbol,
-      },
-    });
+    return await this.entityManager.findOneOrFail(Account, { where: {
+      owner_account: beneficiary.owner,
+      account_namespace: beneficiary.namespace,
+      symbol: beneficiary.symbol,
+    }});
   }
 }

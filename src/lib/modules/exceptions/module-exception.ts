@@ -1,4 +1,4 @@
-class ModuleException extends Error {
+export class ModuleException extends Error {
   message: string;
 
   constructor(message: string) {
