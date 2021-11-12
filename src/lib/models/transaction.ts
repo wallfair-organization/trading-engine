@@ -1,8 +1,10 @@
+import { AccountNamespace } from "../../db/enums/AccountNamespace";
+
 export interface Transaction {
-  sender_namespace: string;
+  sender_namespace: AccountNamespace;
   sender_account: string;
-  receiver_namespace: string;
+  receiver_namespace: AccountNamespace;
   receiver_account: string;
   symbol: string;
-  amount: number;
+  amount: string;
 }

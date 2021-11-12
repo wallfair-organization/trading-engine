@@ -1,20 +1,29 @@
-import { getRepository } from 'typeorm';
+import { EntityManager } from 'typeorm';
 import { ExternalTransaction } from '../../db/entities/ExternalTransaction';
 import { Transaction } from '../../db/entities/Transaction';
 import { ExternalTransactionStatus } from '../../db/enums/ExternalTransactionStatus';
 import { ExternalTransaction as ExternalTransactionModel } from '../models';
 import { Transaction as TransactionModel } from '../models/transaction';
+import { BaseModule } from './base-module';
+import { ModuleException } from "./exceptions/module-exception";
 
-export class Transactions {
+export class Transactions extends BaseModule {
+
+  constructor(entityManager?: EntityManager) {
+    super(entityManager);
+  }
+
   async insertTransaction(transaction: TransactionModel) {
     try {
-      const transactionRepo = getRepository(Transaction);
-      const transactionEntity = new Transaction();
-      transactionEntity.assignAttributes({ ...transaction });
-      await transactionRepo.save(transactionEntity);
+      await this.entityManager.insert(Transaction, transaction);
     } catch (e) {
       console.error('ERROR: ', e.message);
+      await this.rollbackTransaction();
       throw new ModuleException(e.message);
+    } finally {
+      if (!this.entityManager.queryRunner.isTransactionActive) {
+        this.entityManager.release();
+      }
     }
   }
 
@@ -22,25 +31,27 @@ export class Transactions {
     externalTransaction: ExternalTransactionModel
   ) {
     try {
-      const transactionRepo = getRepository(ExternalTransaction);
-      const entity = new ExternalTransaction();
-      entity.assignAttributes({ ...externalTransaction });
-      await transactionRepo.save(entity);
+      await this.entityManager.insert(ExternalTransaction, externalTransaction);
     } catch (e) {
       console.error('ERROR: ', e.message);
+      await this.rollbackTransaction();
       throw new ModuleException(e.message);
+    } finally {
+      if (!this.entityManager.queryRunner.isTransactionActive) {
+        this.entityManager.release();
+      }
     }
   }
 
   async getExternalTransaction(id: string) {
     try {
-      const transactionRepo = getRepository(ExternalTransaction);
-      return await transactionRepo.findOne({
-        where: { external_transaction_id: id },
+      return await this.entityManager.findOne(ExternalTransaction, {
+        where: { external_transaction_id: id }
       });
-    } catch (e) {
-      console.error('ERROR: ', e.message);
-      throw new ModuleException(e.message);
+    } finally {
+      if (!this.entityManager.queryRunner.isTransactionActive) {
+        this.entityManager.release();
+      }
     }
   }
 
@@ -49,20 +60,19 @@ export class Transactions {
     status: ExternalTransactionStatus
   ) {
     try {
-      const transactionRepo = getRepository(ExternalTransaction);
-      const entity = await transactionRepo.findOneOrFail({
-        where: {
-          external_transaction_id: id,
-        },
-      });
-
-      await transactionRepo.save({
-        ...entity,
+      await this.entityManager.update(ExternalTransaction, {
+        external_transaction_id: id,
+      }, {
         status,
-      });
+      })
     } catch (e) {
       console.error('ERROR: ', e.message);
+      await this.rollbackTransaction();
       throw new ModuleException(e.message);
+    } finally {
+      if (!this.entityManager.queryRunner.isTransactionActive) {
+        this.entityManager.release();
+      }
     }
   }
 }
