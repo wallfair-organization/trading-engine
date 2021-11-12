@@ -1,4 +1,4 @@
-import { AccountNamespace } from "../../db/enums/AccountNamespace";
+import { AccountNamespace } from './enums/AccountNamespace';
 
 export interface Transaction {
   sender_namespace: AccountNamespace;

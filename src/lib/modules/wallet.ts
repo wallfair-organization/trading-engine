@@ -1,10 +1,10 @@
-import { EntityManager } from "typeorm";
-import { UserAccount } from "../../db/entities/UserAccount";
-import { Account } from "../../db/entities/Account";
-import { Beneficiary } from "../models/beneficiary";
-import BigNumber from "bignumber.js";
-import { BaseModule } from "./base-module";
-import { ModuleException } from "./exceptions/module-exception";
+import { EntityManager } from 'typeorm';
+import { UserAccount } from '../../db/entities/UserAccount';
+import { Account } from '../../db/entities/Account';
+import { Beneficiary } from '../models/beneficiary';
+import BigNumber from 'bignumber.js';
+import { BaseModule } from './base-module';
+import { ModuleException } from './exceptions/module-exception';
 
 export class Wallet extends BaseModule {
   one: number;
@@ -16,14 +16,13 @@ export class Wallet extends BaseModule {
 
   async getBalance(userId: string) {
     try {
-      const userAccount = await this.entityManager
-        .findOneOrFail(UserAccount, {
-          where: { user_id: userId },
-          relations: ['account']
-        });
+      const userAccount = await this.entityManager.findOneOrFail(UserAccount, {
+        where: { user_id: userId },
+        relations: ['account'],
+      });
       return userAccount.account.balance;
     } catch (e) {
-      console.error("GET BALANCE ERROR: ", e.message);
+      console.error('GET BALANCE ERROR: ', e.message);
       await this.rollbackTransaction();
       throw new ModuleException('Failed to fetch balance');
     } finally {
@@ -39,11 +38,13 @@ export class Wallet extends BaseModule {
     }
 
     try {
-      let account = await this.findAccount(beneficiary);
-      account.balance = new BigNumber(account.balance).plus(new BigNumber(amount)).toString();
+      const account = await this.findAccount(beneficiary);
+      account.balance = new BigNumber(account.balance)
+        .plus(new BigNumber(amount))
+        .toString();
       await this.entityManager.save(account);
     } catch (e) {
-      console.error("MINTING ERROR: ", e.message);
+      console.error('MINTING ERROR: ', e.message);
       await this.rollbackTransaction();
       throw new ModuleException('Failed to fetch balance');
     } finally {
@@ -111,7 +112,7 @@ export class Wallet extends BaseModule {
       });
       await this.entityManager.save(Account, {
         ...receiverAccount,
-        balance: new BigNumber(receiverAccount.balance).plus(amount).toString()
+        balance: new BigNumber(receiverAccount.balance).plus(amount).toString(),
       });
 
       if (this.entityManager.queryRunner.isTransactionActive)
@@ -128,10 +129,12 @@ export class Wallet extends BaseModule {
   }
 
   private async findAccount(beneficiary: Beneficiary): Promise<Account> {
-    return await this.entityManager.findOneOrFail(Account, { where: {
-      owner_account: beneficiary.owner,
-      account_namespace: beneficiary.namespace,
-      symbol: beneficiary.symbol,
-    }});
+    return await this.entityManager.findOneOrFail(Account, {
+      where: {
+        owner_account: beneficiary.owner,
+        account_namespace: beneficiary.namespace,
+        symbol: beneficiary.symbol,
+      },
+    });
   }
 }

@@ -4,10 +4,9 @@ import { Transaction } from '../../db/entities/Transaction';
 import { ExternalTransaction as ExternalTransactionModel } from '../models';
 import { Transaction as TransactionModel } from '../models/transaction';
 import { BaseModule } from './base-module';
-import { ModuleException } from "./exceptions/module-exception";
+import { ModuleException } from './exceptions/module-exception';
 
 export class Transactions extends BaseModule {
-
   constructor(entityManager?: EntityManager) {
     super(entityManager);
   }
@@ -45,7 +44,7 @@ export class Transactions extends BaseModule {
   async getExternalTransaction(id: string) {
     try {
       return await this.entityManager.findOne(ExternalTransaction, {
-        where: { external_transaction_id: id }
+        where: { external_transaction_id: id },
       });
     } finally {
       if (!this.entityManager.queryRunner.isTransactionActive) {
@@ -54,16 +53,17 @@ export class Transactions extends BaseModule {
     }
   }
 
-  async updateExternalTransactionStatus(
-    id: string,
-    status: string
-  ) {
+  async updateExternalTransactionStatus(id: string, status: string) {
     try {
-      await this.entityManager.update(ExternalTransaction, {
-        external_transaction_id: id,
-      }, {
-        status,
-      })
+      await this.entityManager.update(
+        ExternalTransaction,
+        {
+          external_transaction_id: id,
+        },
+        {
+          status,
+        }
+      );
     } catch (e) {
       console.error('ERROR: ', e.message);
       await this.rollbackTransaction();

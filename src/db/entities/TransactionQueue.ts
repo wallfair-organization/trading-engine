@@ -1,5 +1,6 @@
 import { ExternalTransaction } from './ExternalTransaction';
 import {
+  Check,
   Column,
   CreateDateColumn,
   Entity,
@@ -9,9 +10,9 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { NetworkCode } from '../enums/NetworkCode';
 
 @Entity()
+@Check('"amount" > 0')
 export class TransactionQueue {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -25,9 +26,6 @@ export class TransactionQueue {
 
   @Column({
     nullable: false,
-    type: 'enum',
-    enumName: 'network_code',
-    enum: NetworkCode,
   })
   network_code: string;
 
@@ -38,9 +36,9 @@ export class TransactionQueue {
   @Column({ type: 'decimal', nullable: false })
   amount: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamp with time zone' })
   created_at: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamp with time zone' })
   updated_at: Date;
 }

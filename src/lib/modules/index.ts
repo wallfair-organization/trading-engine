@@ -11,11 +11,6 @@ const getEntityManager = (): EntityManager => {
     console.error(e.message);
     return undefined;
   }
-}
-
-export {
-  TransactionManager,
-  Wallet,
-  Transactions,
-  getEntityManager,
 };
+
+export { TransactionManager, Wallet, Transactions, getEntityManager };

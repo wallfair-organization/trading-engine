@@ -5,8 +5,6 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { ExternalTransactionOriginator } from '../enums/ExternalTransactionOriginator';
-import { ExternalTransactionStatus } from '../enums/ExternalTransactionStatus';
 
 export abstract class ExternalTransactionBase {
   @PrimaryGeneratedColumn('uuid')
@@ -14,9 +12,6 @@ export abstract class ExternalTransactionBase {
 
   @Column({
     nullable: false,
-    type: 'enum',
-    enumName: 'external_transaction_originator',
-    enum: ExternalTransactionOriginator,
   })
   @Index()
   originator: string;
@@ -26,9 +21,6 @@ export abstract class ExternalTransactionBase {
 
   @Column({
     nullable: false,
-    type: 'enum',
-    enumName: 'external_transaction_status',
-    enum: ExternalTransactionStatus,
   })
   @Index()
   status: string;
@@ -36,10 +28,10 @@ export abstract class ExternalTransactionBase {
   @Column()
   external_transaction_id: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamp with time zone' })
   created_at: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({ type: 'timestamp with time zone' })
   updated_at: Date;
 
   assignAttributes(attributes) {

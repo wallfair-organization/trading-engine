@@ -1,7 +1,7 @@
-import { EntityManager } from "typeorm";
-import { getEntityManager } from ".";
-import { Transactions } from "./transactions";
-import { Wallet } from "./wallet";
+import { EntityManager } from 'typeorm';
+import { getEntityManager } from '.';
+import { Transactions } from './transactions';
+import { Wallet } from './wallet';
 
 export class TransactionManager {
   wallet: Wallet;
