@@ -33,10 +33,6 @@ export class Wallet extends BaseModule {
   }
 
   async mint(beneficiary: Beneficiary, amount) {
-    if (amount <= 0) {
-      throw new ModuleException('Amount validation failed');
-    }
-
     try {
       const account = await this.findAccount(beneficiary);
       account.balance = new BigNumber(account.balance)
@@ -55,10 +51,6 @@ export class Wallet extends BaseModule {
   }
 
   async burn(beneficiary: Beneficiary, amount) {
-    if (amount <= 0) {
-      throw new ModuleException('Amount validation failed');
-    }
-
     try {
       const account = await this.findAccount(beneficiary);
       const newBalance = new BigNumber(account.balance).minus(
