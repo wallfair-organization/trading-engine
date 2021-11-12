@@ -3,7 +3,7 @@ import { Transactions } from './transactions';
 import { TransactionManager } from './transaction-manager';
 import { EntityManager, getConnection } from 'typeorm';
 
-export const getEntityManager = (): EntityManager => {
+const getEntityManager = (): EntityManager => {
   try {
     const connection = getConnection();
     return new EntityManager(connection, connection.createQueryRunner());
@@ -13,9 +13,9 @@ export const getEntityManager = (): EntityManager => {
   }
 }
 
-module.exports = {
+export {
   TransactionManager,
   Wallet,
   Transactions,
   getEntityManager,
-}
+};
