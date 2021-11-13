@@ -67,6 +67,19 @@ export class Transactions extends BaseModule {
     }
   }
 
+  async getTransactionQueue(id: string) {
+    try {
+      return await this.entityManager.findOne(ExternalTransaction, {
+        where: { id: id },
+        relations: ['transaction_queue'],
+      });
+    } finally {
+      if (!this.entityManager.queryRunner.isTransactionActive) {
+        this.entityManager.release();
+      }
+    }
+  }
+
   async getExternalTransaction(id: string) {
     try {
       return await this.entityManager.findOne(ExternalTransaction, {
