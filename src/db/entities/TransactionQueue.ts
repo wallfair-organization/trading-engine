@@ -33,6 +33,16 @@ export class TransactionQueue {
   @Index()
   receiver: string;
 
+  @Column({
+    nullable: false,
+  })
+  @Index()
+  namespace: string;
+
+  @Column({ nullable: false })
+  @Index()
+  symbol: string;
+
   @Column({ type: 'decimal', nullable: false })
   amount: string;
 
@@ -41,4 +51,12 @@ export class TransactionQueue {
 
   @UpdateDateColumn({ type: 'timestamp with time zone' })
   updated_at: Date;
+
+  assignAttributes(attributes) {
+    this.network_code = attributes.network_code;
+    this.receiver = attributes.receiver;
+    this.amount = attributes.amount;
+    this.symbol = attributes.symbol;
+    this.namespace = attributes.namespace;
+  }
 }

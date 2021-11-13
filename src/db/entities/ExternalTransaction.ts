@@ -6,7 +6,8 @@ import { ExternalTransactionBase } from './ExternalTransactionBase';
 export class ExternalTransaction extends ExternalTransactionBase {
   @OneToOne(
     () => TransactionQueue,
-    (transactionQueue) => transactionQueue.external_transaction
+    (transactionQueue) => transactionQueue.external_transaction,
+    { cascade: ['insert'] }
   )
   transaction_queue: TransactionQueue;
 }

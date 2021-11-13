@@ -25,7 +25,7 @@ export abstract class ExternalTransactionBase {
   @Index()
   status: string;
 
-  @Column()
+  @Column({ nullable: true })
   external_transaction_id: string;
 
   @CreateDateColumn({ type: 'timestamp with time zone' })
