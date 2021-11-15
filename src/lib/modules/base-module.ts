@@ -1,5 +1,5 @@
-import { EntityManager } from "typeorm";
-import { getEntityManager } from ".";
+import { EntityManager } from 'typeorm';
+import { getEntityManager } from '.';
 
 export class BaseModule {
   entityManager: EntityManager;

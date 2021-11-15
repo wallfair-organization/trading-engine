@@ -5,7 +5,6 @@ import {
   Index,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { AccountNamespace } from '../enums/AccountNamespace';
 
 @Entity()
 export class Transaction {
@@ -14,11 +13,8 @@ export class Transaction {
 
   @Column({
     nullable: false,
-    type: 'enum',
-    enumName: 'account_namespace_enum',
-    enum: AccountNamespace,
   })
-  sender_namespace: AccountNamespace;
+  sender_namespace: string;
 
   @Column({ nullable: false })
   @Index('sender_account_idx')
@@ -26,11 +22,8 @@ export class Transaction {
 
   @Column({
     nullable: false,
-    type: 'enum',
-    enumName: 'account_namespace_enum',
-    enum: AccountNamespace,
   })
-  receiver_namespace: AccountNamespace;
+  receiver_namespace: string;
 
   @Column({ nullable: false })
   @Index('receiver_account_idx')
@@ -42,7 +35,7 @@ export class Transaction {
   @Column({ type: 'decimal', nullable: false })
   amount: string;
 
-  @CreateDateColumn()
+  @CreateDateColumn({ type: 'timestamp with time zone' })
   executed_at: Date;
 
   assignAttributes(attributes) {

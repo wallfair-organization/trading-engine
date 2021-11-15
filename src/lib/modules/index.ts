@@ -1,3 +1,4 @@
+import { Account } from './account';
 import { Wallet } from './wallet';
 import { Transactions } from './transactions';
 import { TransactionManager } from './transaction-manager';
@@ -11,11 +12,6 @@ const getEntityManager = (): EntityManager => {
     console.error(e.message);
     return undefined;
   }
-}
-
-export {
-  TransactionManager,
-  Wallet,
-  Transactions,
-  getEntityManager,
 };
+
+export { Account, TransactionManager, Wallet, Transactions, getEntityManager };

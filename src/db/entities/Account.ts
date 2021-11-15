@@ -1,25 +1,14 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  OneToMany,
-  PrimaryColumn,
-  UpdateDateColumn,
-} from 'typeorm';
-import { AccountNamespace } from '../enums/AccountNamespace';
+import { Check, Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
 import { UserAccount } from './UserAccount';
 
 @Entity()
+@Check('"balance" > 0')
 export class Account {
   @PrimaryColumn()
   owner_account: string;
 
-  @PrimaryColumn({
-    type: 'enum',
-    enumName: 'account_namespace_enum',
-    enum: AccountNamespace,
-  })
-  account_namespace: AccountNamespace;
+  @PrimaryColumn()
+  account_namespace: string;
 
   @PrimaryColumn()
   symbol: string;
@@ -29,10 +18,4 @@ export class Account {
 
   @OneToMany(() => UserAccount, (userAccount) => userAccount.account)
   user_accounts: UserAccount[];
-
-  @CreateDateColumn()
-  created_at: Date;
-
-  @UpdateDateColumn()
-  updated_at: Date;
 }
