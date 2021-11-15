@@ -102,8 +102,10 @@ export class Wallet extends BaseModule {
         },
         {
           ...receiverAccount,
-          balance: new BigNumber(receiverAccount.balance).plus(amount).toString(),
-        }
+          balance: new BigNumber(receiverAccount.balance)
+            .plus(amount)
+            .toString(),
+        },
       ]);
     } catch (e) {
       console.error('TRANSFER ERROR: ', e.message);

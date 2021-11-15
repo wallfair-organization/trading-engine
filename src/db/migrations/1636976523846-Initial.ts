@@ -1,17 +1,17 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class Initial1636818095010 implements MigrationInterface {
-  name = 'Initial1636818095010';
+export class Initial1636976523846 implements MigrationInterface {
+  name = 'Initial1636976523846';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
       `CREATE TABLE "user_account" ("user_id" character varying NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "owner_account" character varying NOT NULL, "account_namespace" character varying NOT NULL, "symbol" character varying NOT NULL, CONSTRAINT "PK_1e7af5387f4169347ddef6e8180" PRIMARY KEY ("user_id"))`
     );
     await queryRunner.query(
-      `CREATE TABLE "account" ("owner_account" character varying NOT NULL, "account_namespace" character varying NOT NULL, "symbol" character varying NOT NULL, "balance" numeric NOT NULL, CONSTRAINT "CHK_0f2da2f951af42184fd932a1fa" CHECK ("balance" > 0), CONSTRAINT "PK_8ec3dedb1ee17a8630a7c57b0f9" PRIMARY KEY ("owner_account", "account_namespace", "symbol"))`
+      `CREATE TABLE "account" ("owner_account" character varying NOT NULL, "account_namespace" character varying NOT NULL, "symbol" character varying NOT NULL, "balance" numeric NOT NULL, CONSTRAINT "CHK_737c1ea74cd47dadf42db70738" CHECK ("balance" >= 0), CONSTRAINT "PK_8ec3dedb1ee17a8630a7c57b0f9" PRIMARY KEY ("owner_account", "account_namespace", "symbol"))`
     );
     await queryRunner.query(
-      `CREATE TABLE "transaction_queue" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "network_code" character varying NOT NULL, "receiver" character varying NOT NULL, "namespace" character varying NOT NULL, "symbol" character varying NOT NULL, "amount" numeric NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "externalTransactionId" uuid, CONSTRAINT "REL_2e04dde8bf8c8e75df059196cb" UNIQUE ("externalTransactionId"), CONSTRAINT "CHK_798e40950ce806634a1f1d780b" CHECK ("amount" > 0), CONSTRAINT "PK_ab1d574dc95be0e4aa761888c54" PRIMARY KEY ("id"))`
+      `CREATE TABLE "transaction_queue" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "network_code" character varying NOT NULL, "receiver" character varying NOT NULL, "namespace" character varying NOT NULL, "symbol" character varying NOT NULL, "amount" numeric NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "externalTransactionId" uuid, CONSTRAINT "REL_2e04dde8bf8c8e75df059196cb" UNIQUE ("externalTransactionId"), CONSTRAINT "CHK_a5f9a226d8b603dd5b1cb29665" CHECK ("amount" >= 0), CONSTRAINT "PK_ab1d574dc95be0e4aa761888c54" PRIMARY KEY ("id"))`
     );
     await queryRunner.query(
       `CREATE INDEX "IDX_2803aa8bc828ab88576a5df7b5" ON "transaction_queue" ("receiver") `

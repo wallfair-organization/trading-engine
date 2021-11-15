@@ -1,4 +1,4 @@
-import { AccountNamespace } from "./enums/AccountNamespace";
+import { AccountNamespace } from './enums/AccountNamespace';
 
 export interface Beneficiary {
   owner: string;

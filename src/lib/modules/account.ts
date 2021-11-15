@@ -62,11 +62,13 @@ export class Account extends BaseModule {
       const existingAccount = await this.findAccountInDb(ethAccount);
 
       if (existingAccount) {
-        if (existingAccount.user_accounts?.length && 
-          existingAccount.user_accounts.find(ua => ua.user_id === userId)) {
-            throw new ModuleException('Account already linked');
+        if (
+          existingAccount.user_accounts?.length &&
+          existingAccount.user_accounts.find((ua) => ua.user_id === userId)
+        ) {
+          throw new ModuleException('Account already linked');
         }
-        
+
         await this.entityManager.insert(UserAccount, {
           user_id: userId,
           account: existingAccount,

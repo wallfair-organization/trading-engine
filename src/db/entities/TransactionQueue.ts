@@ -12,7 +12,7 @@ import {
 } from 'typeorm';
 
 @Entity()
-@Check('"amount" > 0')
+@Check('"amount" >= 0')
 export class TransactionQueue {
   @PrimaryGeneratedColumn('uuid')
   id: string;
