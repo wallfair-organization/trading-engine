@@ -5,6 +5,7 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { NetworkCode } from '../../lib/models/enums/NetworkCode';
 
 export abstract class ExternalTransactionBase {
   @PrimaryGeneratedColumn('uuid')
@@ -27,6 +28,12 @@ export abstract class ExternalTransactionBase {
 
   @Column({ nullable: true })
   external_transaction_id: string;
+
+  @Column({ nullable: true })
+  transaction_hash: string;
+
+  @Column({ nullable: false })
+  network_code: string = NetworkCode.ETH;
 
   @CreateDateColumn({ type: 'timestamp with time zone' })
   created_at: Date;
