@@ -5,7 +5,7 @@ import { AccountNamespace } from './enums/AccountNamespace';
 import { ExternalTransactionOriginator } from './enums/ExternalTransactionOriginator';
 import { ExternalTransactionStatus } from './enums/ExternalTransactionStatus';
 
-export { 
+export {
   Beneficiary,
   Transaction,
   ExternalTransaction,

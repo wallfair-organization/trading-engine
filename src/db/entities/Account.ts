@@ -2,7 +2,7 @@ import { Check, Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
 import { UserAccount } from './UserAccount';
 
 @Entity()
-@Check('"balance" > 0')
+@Check('"balance" >= 0')
 export class Account {
   @PrimaryColumn()
   owner_account: string;
