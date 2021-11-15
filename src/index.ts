@@ -11,6 +11,7 @@ export {
   AccountNamespace,
   ExternalTransactionOriginator,
   ExternalTransactionStatus,
+  NetworkCode,
 } from './lib/models';
 export {
   Account,

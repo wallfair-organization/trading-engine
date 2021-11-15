@@ -4,6 +4,7 @@ import { ExternalTransaction } from './external_transaction';
 import { AccountNamespace } from './enums/AccountNamespace';
 import { ExternalTransactionOriginator } from './enums/ExternalTransactionOriginator';
 import { ExternalTransactionStatus } from './enums/ExternalTransactionStatus';
+import { NetworkCode } from './enums/NetworkCode';
 
 export {
   Beneficiary,
@@ -12,4 +13,5 @@ export {
   AccountNamespace,
   ExternalTransactionOriginator,
   ExternalTransactionStatus,
+  NetworkCode,
 };
