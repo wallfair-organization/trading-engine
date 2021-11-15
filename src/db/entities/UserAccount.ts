@@ -13,7 +13,7 @@ export class UserAccount {
   @PrimaryColumn()
   user_id: string;
 
-  @ManyToOne(() => Account, (accounts) => accounts.user_accounts, {
+  @ManyToOne(() => Account, (account) => account.user_accounts, {
     nullable: false,
   })
   @JoinColumn([

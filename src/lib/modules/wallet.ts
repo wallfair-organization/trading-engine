@@ -95,20 +95,16 @@ export class Wallet extends BaseModule {
 
       const receiverAccount = await this.findAccount(receiver);
 
-      if (!this.entityManager.queryRunner.isTransactionActive)
-        await this.entityManager.queryRunner.startTransaction();
-
-      await this.entityManager.save(Account, {
-        ...senderAccount,
-        balance: senderBalance.minus(amount).toString(),
-      });
-      await this.entityManager.save(Account, {
-        ...receiverAccount,
-        balance: new BigNumber(receiverAccount.balance).plus(amount).toString(),
-      });
-
-      if (this.entityManager.queryRunner.isTransactionActive)
-        await this.entityManager.queryRunner.commitTransaction();
+      await this.entityManager.save(Account, [
+        {
+          ...senderAccount,
+          balance: senderBalance.minus(amount).toString(),
+        },
+        {
+          ...receiverAccount,
+          balance: new BigNumber(receiverAccount.balance).plus(amount).toString(),
+        }
+      ]);
     } catch (e) {
       console.error('TRANSFER ERROR: ', e.message);
       await this.rollbackTransaction();

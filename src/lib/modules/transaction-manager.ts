@@ -1,11 +1,12 @@
 import { EntityManager } from 'typeorm';
-import { getEntityManager } from '.';
+import { Account, getEntityManager } from '.';
 import { Transactions } from './transactions';
 import { Wallet } from './wallet';
 
 export class TransactionManager {
   wallet: Wallet;
   transactions: Transactions;
+  account: Account;
   entityManager: EntityManager;
 
   constructor() {
@@ -13,6 +14,7 @@ export class TransactionManager {
     this.entityManager = em;
     this.wallet = new Wallet(em);
     this.transactions = new Transactions(em);
+    this.account = new Account(em);
   }
 
   async startTransaction() {
