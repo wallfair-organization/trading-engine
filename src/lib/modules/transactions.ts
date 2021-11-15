@@ -92,16 +92,14 @@ export class Transactions extends BaseModule {
     }
   }
 
-  async updateExternalTransactionStatus(id: string, status: string) {
+  async updateExternalTransaction(id: string, externalTransaction: ExternalTransactionModel) {
     try {
       await this.entityManager.update(
         ExternalTransaction,
         {
           external_transaction_id: id,
         },
-        {
-          status,
-        }
+        externalTransaction,
       );
     } catch (e) {
       console.error('ERROR: ', e.message);

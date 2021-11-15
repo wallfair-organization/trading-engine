@@ -1,6 +1,8 @@
+import { ExternalTransactionOriginator, ExternalTransactionStatus } from ".";
+
 export interface ExternalTransaction {
-  originator: string;
+  originator: ExternalTransactionOriginator;
   external_system: string;
-  status: string;
+  status: ExternalTransactionStatus;
   external_transaction_id: string;
 }
