@@ -18,4 +18,10 @@ export class BaseModule {
       await this.entityManager.release();
     }
   }
+
+  async releaseConnection() {
+    if (!this.entityManager.queryRunner.isTransactionActive) {
+      await this.entityManager.release();
+    }
+  }
 }
