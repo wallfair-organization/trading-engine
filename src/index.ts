@@ -7,6 +7,7 @@ export * from './lib/main';
 export {
   Beneficiary,
   ExternalTransaction,
+  ExternalTransactionLog,
   Transaction,
   AccountNamespace,
   ExternalTransactionOriginator,
