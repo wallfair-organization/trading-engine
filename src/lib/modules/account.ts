@@ -28,17 +28,11 @@ export class Account extends BaseModule {
       console.error('IS USER OWNER CHECK ERROR: ', e.message);
       await this.rollbackTransaction();
       throw new ModuleException('Ethereum address not mapped to the user');
-    } finally {
-      await this.releaseConnection();
     }
   }
 
   async findAccount(ethAccount: string) {
-    try {
-      return await this.findAccountInDb(ethAccount);
-    } finally {
-      await this.releaseConnection();
-    }
+    return await this.findAccountInDb(ethAccount);
   }
 
   async createAccount(account: Beneficiary, balance: string) {
@@ -52,8 +46,6 @@ export class Account extends BaseModule {
     } catch (e) {
       console.error('CREATE ACCOUNT: ', e.message);
       throw new ModuleException('Create account failed');
-    } finally {
-      await this.releaseConnection();
     }
   }
 
@@ -88,8 +80,6 @@ export class Account extends BaseModule {
       console.error('LINK ACCOUNT: ', e.message);
       await this.rollbackTransaction();
       throw new ModuleException('Failed to link account');
-    } finally {
-      await this.releaseConnection();
     }
   }
 

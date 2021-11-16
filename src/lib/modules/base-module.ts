@@ -6,21 +6,15 @@ export class BaseModule {
 
   constructor(entityManager?: EntityManager) {
     try {
-      this.entityManager = entityManager || getEntityManager();
+      this.entityManager = entityManager || getEntityManager(false);
     } catch (e) {
       console.error(e.message);
     }
   }
 
   async rollbackTransaction() {
-    if (this.entityManager.queryRunner.isTransactionActive) {
+    if (this.entityManager.queryRunner?.isTransactionActive) {
       await this.entityManager.queryRunner.rollbackTransaction();
-      await this.entityManager.release();
-    }
-  }
-
-  async releaseConnection() {
-    if (!this.entityManager.queryRunner.isTransactionActive) {
       await this.entityManager.release();
     }
   }
