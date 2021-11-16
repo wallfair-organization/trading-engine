@@ -1,7 +1,12 @@
 import { EntityManager } from 'typeorm';
 import { ExternalTransaction } from '../../db/entities/ExternalTransaction';
 import { Transaction } from '../../db/entities/Transaction';
-import { ExternalTransaction as ExternalTransactionModel } from '../models';
+import {
+  ExternalTransaction as ExternalTransactionModel,
+  ExternalTransactionOriginator,
+  ExternalTransactionStatus,
+  NetworkCode,
+} from '../models';
 import { Transaction as TransactionModel } from '../models/transaction';
 import { TransactionQueue as TransactionQueueModel } from '../models/transaction_queue';
 import { ExternalTransactionLog as ExternalTransactionLogModel } from '../models/external_transaction_log';
@@ -68,6 +73,28 @@ export class Transactions extends BaseModule {
       return await this.entityManager.findOne(ExternalTransaction, {
         where: { id: id },
         relations: ['transaction_queue'],
+      });
+    } finally {
+      this.releaseConnection();
+    }
+  }
+
+  async getTransactionQueueByStatus(
+    status: ExternalTransactionStatus,
+    network_code: NetworkCode
+  ) {
+    try {
+      return await this.entityManager.find(ExternalTransaction, {
+        where: {
+          status: status,
+          originator: ExternalTransactionOriginator.WITHDRAW,
+          network_code: network_code,
+        },
+        relations: ['transaction_queue'],
+        take: 100,
+        order: {
+          created_at: 'ASC',
+        },
       });
     } finally {
       this.releaseConnection();
