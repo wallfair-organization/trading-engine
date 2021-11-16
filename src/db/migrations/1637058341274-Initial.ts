@@ -1,7 +1,7 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class Initial1636986145406 implements MigrationInterface {
-  name = 'Initial1636986145406';
+export class Initial1637058341274 implements MigrationInterface {
+  name = 'Initial1637058341274';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
@@ -32,7 +32,7 @@ export class Initial1636986145406 implements MigrationInterface {
       `CREATE INDEX "IDX_ba9bb43e3abb89b309aac3c049" ON "external_transaction" ("status") `
     );
     await queryRunner.query(
-      `CREATE TABLE "external_transaction_log" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "originator" character varying NOT NULL, "external_system" character varying NOT NULL, "status" character varying NOT NULL, "external_transaction_id" character varying, "transaction_hash" character varying, "network_code" character varying NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), CONSTRAINT "PK_4c7a4215e0b2ab2bde95a26453f" PRIMARY KEY ("id"))`
+      `CREATE TABLE "external_transaction_log" ("id" uuid NOT NULL DEFAULT uuid_generate_v4(), "originator" character varying NOT NULL, "external_system" character varying NOT NULL, "status" character varying NOT NULL, "external_transaction_id" character varying, "transaction_hash" character varying, "network_code" character varying NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "symbol" character varying, "sender" character varying, "receiver" character varying, "amount" numeric, CONSTRAINT "PK_4c7a4215e0b2ab2bde95a26453f" PRIMARY KEY ("id"))`
     );
     await queryRunner.query(
       `CREATE INDEX "IDX_b3c923ef097e83ba8125313d14" ON "external_transaction_log" ("originator") `
