@@ -1,6 +1,7 @@
 import { Beneficiary } from './beneficiary';
 import { Transaction } from './transaction';
 import { ExternalTransaction } from './external_transaction';
+import { ExternalTransactionLog } from './external_transaction_log';
 import { AccountNamespace } from './enums/AccountNamespace';
 import { ExternalTransactionOriginator } from './enums/ExternalTransactionOriginator';
 import { ExternalTransactionStatus } from './enums/ExternalTransactionStatus';
@@ -10,6 +11,7 @@ export {
   Beneficiary,
   Transaction,
   ExternalTransaction,
+  ExternalTransactionLog,
   AccountNamespace,
   ExternalTransactionOriginator,
   ExternalTransactionStatus,
