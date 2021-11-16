@@ -10,7 +10,7 @@ export class TransactionManager {
   entityManager: EntityManager;
 
   constructor() {
-    const em = getEntityManager();
+    const em = getEntityManager(true);
     this.entityManager = em;
     this.wallet = new Wallet(em);
     this.transactions = new Transactions(em);

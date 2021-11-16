@@ -25,10 +25,6 @@ export class Wallet extends BaseModule {
       console.error('GET BALANCE ERROR: ', e.message);
       await this.rollbackTransaction();
       throw new ModuleException('Failed to fetch balance');
-    } finally {
-      if (!this.entityManager.queryRunner.isTransactionActive) {
-        this.entityManager.release();
-      }
     }
   }
 
@@ -43,10 +39,6 @@ export class Wallet extends BaseModule {
       console.error('MINTING ERROR: ', e.message);
       await this.rollbackTransaction();
       throw new ModuleException('Failed to fetch balance');
-    } finally {
-      if (!this.entityManager.queryRunner.isTransactionActive) {
-        this.entityManager.release();
-      }
     }
   }
 
@@ -70,10 +62,6 @@ export class Wallet extends BaseModule {
       console.error('BURN ERROR: ', e.message);
       await this.rollbackTransaction();
       throw new ModuleException(e.message);
-    } finally {
-      if (!this.entityManager.queryRunner.isTransactionActive) {
-        this.entityManager.release();
-      }
     }
   }
 
@@ -111,10 +99,6 @@ export class Wallet extends BaseModule {
       console.error('TRANSFER ERROR: ', e.message);
       await this.rollbackTransaction();
       throw new ModuleException(e.message);
-    } finally {
-      if (!this.entityManager.queryRunner.isTransactionActive) {
-        this.entityManager.release();
-      }
     }
   }
 

@@ -27,8 +27,6 @@ export class Transactions extends BaseModule {
       console.error('ERROR: ', e.message);
       await this.rollbackTransaction();
       throw new ModuleException(e.message);
-    } finally {
-      this.releaseConnection();
     }
   }
 
@@ -41,8 +39,6 @@ export class Transactions extends BaseModule {
       console.error('ERROR: ', e.message);
       await this.rollbackTransaction();
       throw new ModuleException(e.message);
-    } finally {
-      this.releaseConnection();
     }
   }
 
@@ -63,52 +59,38 @@ export class Transactions extends BaseModule {
       console.error('ERROR: ', e.message);
       await this.rollbackTransaction();
       throw new ModuleException(e.message);
-    } finally {
-      this.releaseConnection();
     }
   }
 
   async getTransactionQueue(id: string) {
-    try {
-      return await this.entityManager.findOne(ExternalTransaction, {
-        where: { id: id },
-        relations: ['transaction_queue'],
-      });
-    } finally {
-      this.releaseConnection();
-    }
+    return await this.entityManager.findOne(ExternalTransaction, {
+      where: { id: id },
+      relations: ['transaction_queue'],
+    });
   }
 
   async getTransactionQueueByStatus(
     status: ExternalTransactionStatus,
     network_code: NetworkCode
   ) {
-    try {
-      return await this.entityManager.find(ExternalTransaction, {
-        where: {
-          status: status,
-          originator: ExternalTransactionOriginator.WITHDRAW,
-          network_code: network_code,
-        },
-        relations: ['transaction_queue'],
-        take: 100,
-        order: {
-          created_at: 'ASC',
-        },
-      });
-    } finally {
-      this.releaseConnection();
-    }
+    return await this.entityManager.find(ExternalTransaction, {
+      where: {
+        status: status,
+        originator: ExternalTransactionOriginator.WITHDRAW,
+        network_code: network_code,
+      },
+      relations: ['transaction_queue'],
+      take: 100,
+      order: {
+        created_at: 'ASC',
+      },
+    });
   }
 
   async getExternalTransaction(id: string) {
-    try {
-      return await this.entityManager.findOne(ExternalTransaction, {
-        where: { external_transaction_id: id },
-      });
-    } finally {
-      this.releaseConnection();
-    }
+    return await this.entityManager.findOne(ExternalTransaction, {
+      where: { external_transaction_id: id },
+    });
   }
 
   async updateExternalTransaction(
@@ -127,8 +109,6 @@ export class Transactions extends BaseModule {
       console.error('ERROR: ', e.message);
       await this.rollbackTransaction();
       throw new ModuleException(e.message);
-    } finally {
-      this.releaseConnection();
     }
   }
 
@@ -144,8 +124,6 @@ export class Transactions extends BaseModule {
       console.error('ERROR: ', e.message);
       await this.rollbackTransaction();
       throw new ModuleException(e.message);
-    } finally {
-      this.releaseConnection();
     }
   }
 }
