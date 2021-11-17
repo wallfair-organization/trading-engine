@@ -30,6 +30,9 @@ export class Wallet extends BaseModule {
 
   async mint(beneficiary: Beneficiary, amount) {
     try {
+      // REV: you read the balance then update it in the code and then write it back? it's very wrong
+      // REV: at least you must read with FOR UPDATE but really this is not necessary. Just UPDATE SET balance = balance + amount
+      // REV: I hope this orm allows for that.
       const account = await this.findAccount(beneficiary);
       account.balance = new BigNumber(account.balance)
         .plus(new BigNumber(amount))
@@ -44,6 +47,7 @@ export class Wallet extends BaseModule {
 
   async burn(beneficiary: Beneficiary, amount) {
     try {
+      // REV: see the transfer function. read account state and then burn is wrong. just burn and let the contraint handle the negative values for you
       const account = await this.findAccount(beneficiary);
       const newBalance = new BigNumber(account.balance).minus(
         new BigNumber(amount)
@@ -73,11 +77,20 @@ export class Wallet extends BaseModule {
     }
 
     try {
+      // REV: this cannot work like this. I think we discussed that many times
+      // REV: you cannot read the account balance and then update it. if you do it you need at least REPEATABLE READ tx and we know it
+      // REV: fails even with few users
+      // REV: this is crucial part and we need to opimize this. what you need to do is to use UPDATE ... ON CONFLICT to create/update account
+      // REV: preferably on both accounts in the same call to database
+      // REV: if there's not enough balance the contraint will raise and you need to catch it and rethrow with the nice message
+      // REV: if the ORM is not supporting that, we do it without ORM. this is the crucial operation in the engine
       const senderAccount = await this.findAccount(sender);
       const senderBalance = new BigNumber(senderAccount.balance);
 
+      // both Beneficiary objects must have the same symbol. where is the check?
       if (senderBalance.isLessThan(amount)) {
-        throw new ModuleException(`Sender can't spend more than it owns! 
+        // also dump symbol here
+        throw new ModuleException(`Sender can't spend more than it owns!
         Sender: ${sender} -- Receiver: ${receiver} -- senderBalance: ${senderAccount.balance} -- amount: ${amount}`);
       }
 

@@ -12,6 +12,7 @@ export class ExternalTransactionLog extends ExternalTransactionBase {
   @Column({ nullable: true })
   receiver: string;
 
+  // REV: please add scale=0 to the decimal we want only integers to be stored
   @Column({ type: 'decimal', nullable: true })
   amount: string;
 }

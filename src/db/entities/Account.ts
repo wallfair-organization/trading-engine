@@ -13,6 +13,7 @@ export class Account {
   @PrimaryColumn()
   symbol: string;
 
+  // REV: please add scale=0 to the decimal we want only integers to be stored
   @Column({ type: 'decimal', nullable: false })
   balance: string;
 

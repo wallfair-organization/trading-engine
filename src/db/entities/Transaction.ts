@@ -32,6 +32,7 @@ export class Transaction {
   @Column({ nullable: false })
   symbol: string;
 
+  // REV: please add scale=0 to the decimal we want only integers to be stored
   @Column({ type: 'decimal', nullable: false })
   amount: string;
 

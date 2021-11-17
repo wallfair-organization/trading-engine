@@ -122,6 +122,7 @@ export class Transactions extends BaseModule {
     externalTransaction: ExternalTransactionModel
   ) {
     try {
+      // REV: I hope that before you call it in your code you lock the object with FOR UPDATE
       await this.entityManager.update(
         ExternalTransaction,
         {
