@@ -62,6 +62,30 @@ export class Transactions extends BaseModule {
     }
   }
 
+  async updateTransactionQueueState(
+    id: string,
+    status: ExternalTransactionStatus,
+    hash: string
+  ) {
+    try {
+      await this.entityManager.update(
+        ExternalTransaction,
+        {
+          id: id,
+        },
+        {
+          status: status,
+          transaction_hash: hash,
+          external_transaction_id: hash,
+        }
+      );
+    } catch (e) {
+      console.error('ERROR: ', e.message);
+      await this.rollbackTransaction();
+      throw new ModuleException(e.message);
+    }
+  }
+
   async getTransactionQueue(id: string) {
     return await this.entityManager.findOne(ExternalTransaction, {
       where: { id: id },
