@@ -34,8 +34,8 @@ jobs:
         run: npm ci
       - name: Setup
         run: |
-          git config --global user.email "no-reploy@wallfair.io"
-          git config --global user.name "Wallfair.io"
+          git config --global user.email "dev@wallfair.io"
+          git config --global user.name "wallfair"
       - name: Prepare release
         run: npm run prepare-release
       - name: Push tags & changelog
