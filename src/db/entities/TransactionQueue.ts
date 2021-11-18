@@ -33,6 +33,10 @@ export class TransactionQueue {
   @Index()
   receiver: string;
 
+  @Column({ nullable: true })
+  @Index()
+  sender: string;
+
   @Column({
     nullable: false,
   })
