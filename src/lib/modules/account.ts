@@ -13,7 +13,7 @@ export class Account extends BaseModule {
 
   async isUserOwner(userId: string, account: string) {
     try {
-      const userAccount = await this.entityManager.findOneOrFail(UserAccount, {
+      return await this.entityManager.findOneOrFail(UserAccount, {
         where: {
           user_id: userId,
           account: {
@@ -23,7 +23,6 @@ export class Account extends BaseModule {
         },
         relations: ['account'],
       });
-      return userAccount;
     } catch (e) {
       console.error('IS USER OWNER CHECK ERROR: ', e.message);
       await this.rollbackTransaction();
@@ -49,33 +48,21 @@ export class Account extends BaseModule {
     }
   }
 
-  async linkAccount(userId: string, ethAccount: string, balance: string) {
+  async linkEthereumAccount(
+    userId: string,
+    ethAccount: string,
+    balance: string
+  ) {
     try {
-      const existingAccount = await this.findAccountInDb(ethAccount);
-
-      if (existingAccount) {
-        if (
-          existingAccount.user_accounts?.length &&
-          existingAccount.user_accounts.find((ua) => ua.user_id === userId)
-        ) {
-          throw new ModuleException('Account already linked');
-        }
-
-        await this.entityManager.insert(UserAccount, {
-          user_id: userId,
-          account: existingAccount,
-        });
-      } else {
-        await this.entityManager.insert(UserAccount, {
-          user_id: userId,
-          account: {
-            owner_account: ethAccount,
-            account_namespace: AccountNamespace.ETH,
-            symbol: 'WFAIR',
-            balance,
-          },
-        });
-      }
+      return await this.entityManager.insert(UserAccount, {
+        user_id: userId,
+        account: {
+          owner_account: ethAccount,
+          account_namespace: AccountNamespace.ETH,
+          symbol: 'WFAIR',
+          balance,
+        },
+      });
     } catch (e) {
       console.error('LINK ACCOUNT: ', e.message);
       await this.rollbackTransaction();

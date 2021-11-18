@@ -1,8 +1,7 @@
-import { Check, Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
+import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
 import { UserAccount } from './UserAccount';
 
 @Entity()
-@Check('"balance" >= 0')
 export class Account {
   @PrimaryColumn()
   owner_account: string;
@@ -13,7 +12,7 @@ export class Account {
   @PrimaryColumn()
   symbol: string;
 
-  @Column({ type: 'decimal', nullable: false })
+  @Column({ type: 'decimal', scale: 0, nullable: false })
   balance: string;
 
   @OneToMany(() => UserAccount, (userAccount) => userAccount.account)

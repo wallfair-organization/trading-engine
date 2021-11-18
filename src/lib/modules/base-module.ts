@@ -2,14 +2,10 @@ import { EntityManager } from 'typeorm';
 import { getEntityManager } from '.';
 
 export class BaseModule {
-  entityManager: EntityManager;
+  protected readonly entityManager: EntityManager;
 
   constructor(entityManager?: EntityManager) {
-    try {
-      this.entityManager = entityManager || getEntityManager(false);
-    } catch (e) {
-      console.error(e.message);
-    }
+    this.entityManager = entityManager || getEntityManager(false);
   }
 
   async rollbackTransaction() {
