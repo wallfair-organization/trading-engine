@@ -31,7 +31,7 @@
     "watch:test": "nyc --silent ava --watch",
     "version": "standard-version",
     "prepare-husky": "run-s fix test:lint cov",
-    "prepare-release": "run-s test cov:check version"
+    "prepare-release": "run-s test cov:check"
   },
   "engines": {
     "node": ">=10"
