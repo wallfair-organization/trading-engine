@@ -1,6 +1,8 @@
 # trading-engine
 
-Trading engine package to be used for Wallfair trading related microservices
+>Trading engine package to be used for Wallfair trading related microservices
+
+<span class="badge-npmversion"><a href="https://www.npmjs.com/package/@wallfair.io/trading-engine" title="View this project on NPM"><img src="https://img.shields.io/npm/v/@wallfair.io/trading-engine.svg" alt="NPM version" /></a></span>
 
 ## Configuration
 
