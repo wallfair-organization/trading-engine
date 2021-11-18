@@ -7,7 +7,7 @@ export class TransactionManager {
   wallet: Wallet;
   transactions: Transactions;
   account: Account;
-  entityManager: EntityManager;
+  private readonly entityManager: EntityManager;
 
   constructor() {
     const em = getEntityManager(true);

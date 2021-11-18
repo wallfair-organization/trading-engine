@@ -1,8 +1,7 @@
-import { EntityManager } from 'typeorm';
+import { EntityManager, InsertResult } from 'typeorm';
 import { UserAccount } from '../../db/entities/UserAccount';
 import { Account } from '../../db/entities/Account';
 import { Beneficiary } from '../models/beneficiary';
-import BigNumber from 'bignumber.js';
 import { BaseModule } from './base-module';
 import { ModuleException } from './exceptions/module-exception';
 
@@ -28,13 +27,9 @@ export class Wallet extends BaseModule {
     }
   }
 
-  async mint(beneficiary: Beneficiary, amount) {
+  async mint(beneficiary: Beneficiary, amount: string) {
     try {
-      const account = await this.findAccount(beneficiary);
-      account.balance = new BigNumber(account.balance)
-        .plus(new BigNumber(amount))
-        .toString();
-      await this.entityManager.save(account);
+      return await this.updateBalance([{ beneficiary, amount }]);
     } catch (e) {
       console.error('MINTING ERROR: ', e.message);
       await this.rollbackTransaction();
@@ -42,22 +37,9 @@ export class Wallet extends BaseModule {
     }
   }
 
-  async burn(beneficiary: Beneficiary, amount) {
+  async burn(beneficiary: Beneficiary, amount: string) {
     try {
-      const account = await this.findAccount(beneficiary);
-      const newBalance = new BigNumber(account.balance).minus(
-        new BigNumber(amount)
-      );
-
-      if (newBalance.isNegative()) {
-        throw new ModuleException(`Owner can't burn more than it owns!
-        -- Owner: ${beneficiary.owner} owns: ${account.balance} burns: ${amount}`);
-      }
-
-      await this.entityManager.save(Account, {
-        ...account,
-        balance: newBalance.toString(),
-      });
+      return await this.updateBalance([{ beneficiary, amount: '-' + amount }]);
     } catch (e) {
       console.error('BURN ERROR: ', e.message);
       await this.rollbackTransaction();
@@ -65,35 +47,15 @@ export class Wallet extends BaseModule {
     }
   }
 
-  async transfer(sender: Beneficiary, receiver: Beneficiary, amountToTransfer) {
-    const amount = new BigNumber(amountToTransfer);
-
-    if (amount.isNegative() || amount.isZero()) {
-      throw new ModuleException('Amount validation failed');
-    }
-
+  async transfer(
+    sender: Beneficiary,
+    receiver: Beneficiary,
+    amountToTransfer: string
+  ) {
     try {
-      const senderAccount = await this.findAccount(sender);
-      const senderBalance = new BigNumber(senderAccount.balance);
-
-      if (senderBalance.isLessThan(amount)) {
-        throw new ModuleException(`Sender can't spend more than it owns! 
-        Sender: ${sender} -- Receiver: ${receiver} -- senderBalance: ${senderAccount.balance} -- amount: ${amount}`);
-      }
-
-      const receiverAccount = await this.findAccount(receiver);
-
-      await this.entityManager.save(Account, [
-        {
-          ...senderAccount,
-          balance: senderBalance.minus(amount).toString(),
-        },
-        {
-          ...receiverAccount,
-          balance: new BigNumber(receiverAccount.balance)
-            .plus(amount)
-            .toString(),
-        },
+      return await this.updateBalance([
+        { beneficiary: sender, amount: '-' + amountToTransfer },
+        { beneficiary: receiver, amount: amountToTransfer },
       ]);
     } catch (e) {
       console.error('TRANSFER ERROR: ', e.message);
@@ -102,13 +64,28 @@ export class Wallet extends BaseModule {
     }
   }
 
-  private async findAccount(beneficiary: Beneficiary): Promise<Account> {
-    return await this.entityManager.findOneOrFail(Account, {
-      where: {
-        owner_account: beneficiary.owner,
-        account_namespace: beneficiary.namespace,
-        symbol: beneficiary.symbol,
-      },
-    });
+  private async updateBalance(
+    values: { beneficiary: Beneficiary; amount: string }[]
+  ): Promise<InsertResult> {
+    return await this.entityManager
+      .createQueryBuilder()
+      .useTransaction(!this.entityManager.queryRunner?.isTransactionActive)
+      .insert()
+      .into(Account)
+      .values(
+        values.map((v) => {
+          return {
+            owner_account: v.beneficiary.owner,
+            account_namespace: v.beneficiary.namespace,
+            symbol: v.beneficiary.symbol,
+            balance: v.amount,
+          };
+        })
+      )
+      .onConflict(
+        `("owner_account", "account_namespace", "symbol") DO UPDATE SET "balance" = account.balance + EXCLUDED.balance`
+      )
+      .returning('balance')
+      .execute();
   }
 }

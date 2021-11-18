@@ -43,7 +43,7 @@ export class TransactionQueue {
   @Index()
   symbol: string;
 
-  @Column({ type: 'decimal', nullable: false })
+  @Column({ type: 'decimal', scale: 0, nullable: false })
   amount: string;
 
   @CreateDateColumn({ type: 'timestamp with time zone' })

@@ -13,6 +13,7 @@ const config: ConnectionOptions = {
   logging: process.env.DB_QUERY_LOGGING === 'true',
 
   entities: [__dirname + '/entities/*{.ts,.js}'],
+  subscribers: [__dirname + '/subscribers/*{.ts,.js}'],
   migrations: [__dirname + '/migrations/*{.ts,.js}'],
   cli: {
     migrationsDir: './src/db/migrations',
