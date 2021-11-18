@@ -32,8 +32,14 @@ jobs:
       - uses: actions/checkout@v2
       - name: Install modules
         run: npm ci
+      - name: Setup
+        run: |
+          git config --global user.email "no-reploy@wallfair.io"
+          git config --global user.name "Wallfair.io"
       - name: Prepare release
         run: npm run prepare-release
+      - name: Push tags & changelog
+        run: git push --follow-tags origin main
       - name: Publish to NPM
         uses: JS-DevTools/npm-publish@v1
         with:
