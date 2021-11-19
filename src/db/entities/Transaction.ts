@@ -37,13 +37,4 @@ export class Transaction {
 
   @CreateDateColumn({ type: 'timestamp with time zone' })
   executed_at: Date;
-
-  assignAttributes(attributes) {
-    this.sender_namespace = attributes.sender_namespace;
-    this.sender_account = attributes.sender_account;
-    this.receiver_namespace = attributes.receiver_namespace;
-    this.receiver_account = attributes.receiver_account;
-    this.symbol = attributes.symbol;
-    this.amount = attributes.amount;
-  }
 }

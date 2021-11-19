@@ -99,6 +99,14 @@
       "^.+\\.(ts|tsx)?$": "ts-jest",
       "^.+\\.(js|jsx)$": "babel-jest"
     },
-    "preset": "ts-jest"
+    "preset": "ts-jest",
+    "collectCoverageFrom": [
+      "src/lib/**/*.ts",
+      "src/db/entities/**/*.ts",
+      "src/db/subscribers/**/*.ts"
+    ],
+    "coveragePathIgnorePatterns": [
+      "src/lib/main.ts"
+    ]
   }
 }
