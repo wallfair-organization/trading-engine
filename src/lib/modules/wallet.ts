@@ -1,5 +1,5 @@
 import { EntityManager, InsertResult } from 'typeorm';
-import { UserAccount } from '../../db/entities/UserAccount';
+import { User } from '../../db/entities/User';
 import { Account } from '../../db/entities/Account';
 import { Beneficiary } from '../models/beneficiary';
 import { BaseModule } from './base-module';
@@ -15,11 +15,17 @@ export class Wallet extends BaseModule {
 
   async getBalance(userId: string) {
     try {
-      const userAccount = await this.entityManager.findOneOrFail(UserAccount, {
-        where: { user_id: userId },
-        relations: ['account'],
-      });
-      return userAccount.account.balance;
+      const user = await this.entityManager
+        .createQueryBuilder(User, 'user')
+        .innerJoinAndSelect('user.accounts', 'account')
+        .where(
+          'user_account.owner_account = :userId AND user_account.user_id = :userId',
+          {
+            userId,
+          }
+        )
+        .getOneOrFail();
+      return user.accounts[0].balance;
     } catch (e) {
       console.error('GET BALANCE ERROR: ', e.message);
       await this.rollbackTransaction();

@@ -22,7 +22,7 @@ export class Transactions extends BaseModule {
 
   async insertTransaction(transaction: TransactionModel) {
     try {
-      await this.entityManager.insert(Transaction, transaction);
+      return await this.entityManager.insert(Transaction, transaction);
     } catch (e) {
       console.error('ERROR: ', e.message);
       await this.rollbackTransaction();
@@ -34,7 +34,7 @@ export class Transactions extends BaseModule {
     externalTransaction: ExternalTransactionModel
   ) {
     try {
-      await this.entityManager.insert(ExternalTransaction, externalTransaction);
+      return await this.entityManager.insert(ExternalTransaction, externalTransaction);
     } catch (e) {
       console.error('ERROR: ', e.message);
       await this.rollbackTransaction();
@@ -68,7 +68,7 @@ export class Transactions extends BaseModule {
     hash: string
   ) {
     try {
-      await this.entityManager.update(
+      return await this.entityManager.update(
         ExternalTransaction,
         {
           id: id,
@@ -99,9 +99,9 @@ export class Transactions extends BaseModule {
   ) {
     return await this.entityManager.find(ExternalTransaction, {
       where: {
-        status: status,
+        status,
         originator: ExternalTransactionOriginator.WITHDRAW,
-        network_code: network_code,
+        network_code,
       },
       relations: ['transaction_queue'],
       take: 100,
@@ -111,21 +111,21 @@ export class Transactions extends BaseModule {
     });
   }
 
-  async getExternalTransaction(id: string) {
+  async getExternalTransaction(external_transaction_id: string) {
     return await this.entityManager.findOne(ExternalTransaction, {
-      where: { external_transaction_id: id },
+      where: { external_transaction_id },
     });
   }
 
   async updateExternalTransaction(
-    id: string,
+    external_transaction_id: string,
     externalTransaction: ExternalTransactionModel
   ) {
     try {
-      await this.entityManager.update(
+      return await this.entityManager.update(
         ExternalTransaction,
         {
-          external_transaction_id: id,
+          external_transaction_id,
         },
         externalTransaction
       );
@@ -140,7 +140,7 @@ export class Transactions extends BaseModule {
     externalTransactionLog: ExternalTransactionLogModel
   ) {
     try {
-      await this.entityManager.insert(
+      return await this.entityManager.insert(
         ExternalTransactionLog,
         externalTransactionLog
       );

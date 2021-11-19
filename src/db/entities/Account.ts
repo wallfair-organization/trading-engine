@@ -1,5 +1,5 @@
-import { Column, Entity, OneToMany, PrimaryColumn } from 'typeorm';
-import { UserAccount } from './UserAccount';
+import { Column, Entity, ManyToMany, PrimaryColumn } from 'typeorm';
+import { User } from './User';
 
 @Entity()
 export class Account {
@@ -15,6 +15,8 @@ export class Account {
   @Column({ type: 'decimal', scale: 0, nullable: false })
   balance: string;
 
-  @OneToMany(() => UserAccount, (userAccount) => userAccount.account)
-  user_accounts: UserAccount[];
+  @ManyToMany(() => User, (user) => user.accounts, {
+    cascade: ['insert'],
+  })
+  users: User[];
 }

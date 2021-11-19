@@ -1,11 +1,11 @@
 import { MigrationInterface, QueryRunner } from 'typeorm';
 
-export class Initial1637230666246 implements MigrationInterface {
-  name = 'Initial1637230666246';
+export class Initial1637338581201 implements MigrationInterface {
+  name = 'Initial1637338581201';
 
   public async up(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
-      `CREATE TABLE "user_account" ("user_id" character varying NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "owner_account" character varying NOT NULL, "account_namespace" character varying NOT NULL, "symbol" character varying NOT NULL, CONSTRAINT "PK_1e7af5387f4169347ddef6e8180" PRIMARY KEY ("user_id"))`
+      `CREATE TABLE "user" ("user_id" character varying NOT NULL, "created_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), "updated_at" TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(), CONSTRAINT "PK_758b8ce7c18b9d347461b30228d" PRIMARY KEY ("user_id"))`
     );
     await queryRunner.query(
       `CREATE TABLE "account" ("owner_account" character varying NOT NULL, "account_namespace" character varying NOT NULL, "symbol" character varying NOT NULL, "balance" numeric NOT NULL, CONSTRAINT "PK_8ec3dedb1ee17a8630a7c57b0f9" PRIMARY KEY ("owner_account", "account_namespace", "symbol"))`
@@ -53,20 +53,42 @@ export class Initial1637230666246 implements MigrationInterface {
       `CREATE INDEX "receiver_account_idx" ON "transaction" ("receiver_account") `
     );
     await queryRunner.query(
-      `ALTER TABLE "user_account" ADD CONSTRAINT "FK_07b1f76609d3e524be765a89bdd" FOREIGN KEY ("owner_account", "account_namespace", "symbol") REFERENCES "account"("owner_account","account_namespace","symbol") ON DELETE NO ACTION ON UPDATE NO ACTION`
+      `CREATE TABLE "user_accounts" ("user_id" character varying NOT NULL, "owner_account" character varying NOT NULL, "account_namespace" character varying NOT NULL, "symbol" character varying NOT NULL, CONSTRAINT "PK_779095453f93df79940fa03660f" PRIMARY KEY ("user_id", "owner_account", "account_namespace", "symbol"))`
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_6711686e2dc4fcf9c7c83b8373" ON "user_accounts" ("user_id") `
+    );
+    await queryRunner.query(
+      `CREATE INDEX "IDX_dd8f575176b6a7730146f52556" ON "user_accounts" ("owner_account", "account_namespace", "symbol") `
     );
     await queryRunner.query(
       `ALTER TABLE "transaction_queue" ADD CONSTRAINT "FK_2e04dde8bf8c8e75df059196cb8" FOREIGN KEY ("externalTransactionId") REFERENCES "external_transaction"("id") ON DELETE NO ACTION ON UPDATE NO ACTION`
+    );
+    await queryRunner.query(
+      `ALTER TABLE "user_accounts" ADD CONSTRAINT "FK_6711686e2dc4fcf9c7c83b83735" FOREIGN KEY ("user_id") REFERENCES "user"("user_id") ON DELETE CASCADE ON UPDATE CASCADE`
+    );
+    await queryRunner.query(
+      `ALTER TABLE "user_accounts" ADD CONSTRAINT "FK_dd8f575176b6a7730146f525569" FOREIGN KEY ("owner_account", "account_namespace", "symbol") REFERENCES "account"("owner_account","account_namespace","symbol") ON DELETE NO ACTION ON UPDATE NO ACTION`
     );
   }
 
   public async down(queryRunner: QueryRunner): Promise<void> {
     await queryRunner.query(
+      `ALTER TABLE "user_accounts" DROP CONSTRAINT "FK_dd8f575176b6a7730146f525569"`
+    );
+    await queryRunner.query(
+      `ALTER TABLE "user_accounts" DROP CONSTRAINT "FK_6711686e2dc4fcf9c7c83b83735"`
+    );
+    await queryRunner.query(
       `ALTER TABLE "transaction_queue" DROP CONSTRAINT "FK_2e04dde8bf8c8e75df059196cb8"`
     );
     await queryRunner.query(
-      `ALTER TABLE "user_account" DROP CONSTRAINT "FK_07b1f76609d3e524be765a89bdd"`
+      `DROP INDEX "public"."IDX_dd8f575176b6a7730146f52556"`
     );
+    await queryRunner.query(
+      `DROP INDEX "public"."IDX_6711686e2dc4fcf9c7c83b8373"`
+    );
+    await queryRunner.query(`DROP TABLE "user_accounts"`);
     await queryRunner.query(`DROP INDEX "public"."receiver_account_idx"`);
     await queryRunner.query(`DROP INDEX "public"."sender_account_idx"`);
     await queryRunner.query(`DROP TABLE "transaction"`);
@@ -98,6 +120,6 @@ export class Initial1637230666246 implements MigrationInterface {
     );
     await queryRunner.query(`DROP TABLE "transaction_queue"`);
     await queryRunner.query(`DROP TABLE "account"`);
-    await queryRunner.query(`DROP TABLE "user_account"`);
+    await queryRunner.query(`DROP TABLE "user"`);
   }
 }

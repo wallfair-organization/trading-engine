@@ -7,7 +7,11 @@ import {
 import { Account } from '../entities/Account';
 
 @EventSubscriber()
-export class AccountSubscriber implements EntitySubscriberInterface {
+export class AccountSubscriber implements EntitySubscriberInterface<Account> {
+  listenTo() {
+    return Account;
+  }
+
   afterInsert(event: InsertEvent<Account>) {
     if (new BigNumber(event.entity.balance).isNegative()) {
       throw new Error('Account limit exceeded');
