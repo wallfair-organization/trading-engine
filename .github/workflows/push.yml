@@ -1,7 +1,6 @@
 name: Release - Wallfair. Trading Engine
 
 on:
-  workflow_dispatch:
   push:
     branches:
       - main
