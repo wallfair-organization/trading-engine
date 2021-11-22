@@ -7,7 +7,12 @@
     "tsconfigRootDir": "./"
   },
   "env": { "es6": true },
-  "ignorePatterns": ["node_modules", "build", "coverage"],
+  "ignorePatterns": [
+    "node_modules",
+    "build",
+    "coverage",
+    "src/test/**/*.ts"
+  ],
   "plugins": ["import", "eslint-comments"],
   "extends": [
     "eslint:recommended",

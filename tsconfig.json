@@ -26,8 +26,7 @@
 
     "lib": ["es2017"],
     "types": [
-      "node",
-      "jest"
+      "node"
     ],
     "typeRoots": [
       "node_modules/@types"
@@ -37,7 +36,8 @@
     "src/**/*.ts"
   ],
   "exclude": [
-    "node_modules/**"
+    "node_modules/**",
+    "src/test/**"
   ],
   "compileOnSave": false
 }
