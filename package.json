@@ -35,9 +35,7 @@
     "access": "public"
   },
   "dependencies": {
-    "@babel/runtime": "^7.16.3",
     "bignumber.js": "^9.0.1",
-    "madge": "^5.0.1",
     "pg": "^8.6.0",
     "reflect-metadata": "^0.1.13",
     "typeorm": "^0.2.38"
@@ -45,6 +43,7 @@
   "devDependencies": {
     "@babel/plugin-transform-runtime": "^7.16.4",
     "@babel/preset-env": "^7.16.4",
+    "@babel/runtime": "^7.16.3",
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
     "@types/jest": "^27.0.2",
     "@types/node": "^16.11.6",
@@ -60,6 +59,7 @@
     "eslint-plugin-import": "^2.22.0",
     "husky": "^7.0.4",
     "jest": "^27.3.1",
+    "madge": "^5.0.1",
     "npm-run-all": "^4.1.5",
     "nyc": "^15.1.0",
     "open-cli": "^6.0.1",
