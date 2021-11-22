@@ -8,10 +8,7 @@
   "license": "AGPL-3.0",
   "scripts": {
     "build": "rm -rf ./build && tsc -p tsconfig.json",
-    "cov": "run-s build test:unit cov:html cov:lcov && open-cli coverage/index.html",
-    "cov:check": "nyc report && nyc check-coverage --lines 50 --functions 50 --branches 50",
-    "cov:html": "nyc report --reporter=html",
-    "cov:lcov": "nyc report --reporter=lcov",
+    "build:test": "rm -rf ./build/test && tsc -p tsconfig.spec.json",
     "doc": "run-s doc:html && open-cli build/docs/index.html",
     "doc:html": "typedoc src/ --exclude **/*.spec.ts --target ES6 --mode file --out build/docs",
     "doc:json": "typedoc src/ --exclude **/*.spec.ts --target ES6 --mode file --json build/docs/typedoc.json",
@@ -23,15 +20,13 @@
     "migration:generate": "npm run typeorm migration:generate -- -n",
     "migration:run": "npm run typeorm migration:run",
     "schema:drop": "npm run typeorm schema:drop",
-    "test": "run-s build test:*",
+    "test": "run-s build:test test:*",
     "test:lint": "eslint src --ext .ts",
-    "test:unit": "nyc --silent ava",
+    "test:unit": "jest -i --detectOpenHandles --passWithNoTests --forceExit --coverage --verbose true --silent",
     "typeorm": "node --require ts-node/register ./node_modules/typeorm/cli.js --config src/db/config.ts",
-    "watch:build": "tsc -p tsconfig.json -w",
-    "watch:test": "nyc --silent ava --watch",
     "version": "standard-version",
-    "prepare-husky": "run-s fix test:lint cov",
-    "prepare-release": "run-s test cov:check version"
+    "prepare-husky": "run-s fix test",
+    "prepare-release": "run-s test version"
   },
   "engines": {
     "node": ">=10"
@@ -40,18 +35,22 @@
     "access": "public"
   },
   "dependencies": {
+    "@babel/runtime": "^7.16.3",
     "bignumber.js": "^9.0.1",
+    "madge": "^5.0.1",
     "pg": "^8.6.0",
     "reflect-metadata": "^0.1.13",
     "typeorm": "^0.2.38"
   },
   "devDependencies": {
-    "@ava/typescript": "^1.1.1",
+    "@babel/plugin-transform-runtime": "^7.16.4",
+    "@babel/preset-env": "^7.16.4",
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
+    "@types/jest": "^27.0.2",
     "@types/node": "^16.11.6",
     "@typescript-eslint/eslint-plugin": "^4.0.1",
     "@typescript-eslint/parser": "^4.0.1",
-    "ava": "^3.12.1",
+    "babel-jest": "^27.3.1",
     "codecov": "^3.5.0",
     "cz-conventional-changelog": "^3.3.0",
     "dotenv": "^10.0.0",
@@ -60,11 +59,13 @@
     "eslint-plugin-eslint-comments": "^3.2.0",
     "eslint-plugin-import": "^2.22.0",
     "husky": "^7.0.4",
+    "jest": "^27.3.1",
     "npm-run-all": "^4.1.5",
     "nyc": "^15.1.0",
     "open-cli": "^6.0.1",
     "prettier": "^2.1.1",
     "standard-version": "^9.0.0",
+    "ts-jest": "^27.0.7",
     "ts-node": "^9.0.0",
     "typedoc": "^0.19.0",
     "typescript": "^4.4.2"
@@ -76,15 +77,6 @@
     "LICENSE",
     "README.md"
   ],
-  "ava": {
-    "failFast": true,
-    "timeout": "60s",
-    "typescript": {
-      "rewritePaths": {
-        "src/": "build/src/"
-      }
-    }
-  },
   "config": {
     "commitizen": {
       "path": "cz-conventional-changelog"
@@ -98,5 +90,36 @@
     "exclude": [
       "**/*.spec.js"
     ]
+  },
+  "jest": {
+    "roots": [
+      "src"
+    ],
+    "transform": {
+      "^.+\\.(ts|tsx)?$": "ts-jest",
+      "^.+\\.(js|jsx)$": "babel-jest"
+    },
+    "preset": "ts-jest",
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ],
+    "coveragePathIgnorePatterns": [
+      "src/index.ts",
+      "src/lib/main.ts",
+      "src/db/migrations"
+    ],
+    "globals": {
+      "ts-jest": {
+        "tsconfig": "tsconfig.spec.json"
+      }
+    },
+    "coverageThreshold": {
+      "global": {
+        "branches": 95,
+        "functions": 95,
+        "lines": 95,
+        "statements": 95
+      }
+    }
   }
 }
