@@ -6,6 +6,7 @@ on:
 
 jobs:
   build:
+    name: pull_request
     runs-on: ubuntu-latest
 
     env:
