@@ -263,7 +263,6 @@ describe('Test update external transaction by external transaction id', () => {
     const result = await transactions.updateExternalTransaction(
       stub.external_transaction_id,
       {
-        ...externalTransactionModel,
         status: ExternalTransactionStatus.COMPLETED,
       }
     );
@@ -272,7 +271,6 @@ describe('Test update external transaction by external transaction id', () => {
 
   test('when not found', async () => {
     const result = await transactions.updateExternalTransaction('unknown', {
-      ...externalTransactionModel,
       status: ExternalTransactionStatus.COMPLETED,
     });
 
@@ -283,7 +281,6 @@ describe('Test update external transaction by external transaction id', () => {
     const stub = await insertExternalTransaction();
     await expect(
       transactions.updateExternalTransaction(stub.external_transaction_id, {
-        ...externalTransactionModel,
         status: null,
       })
     ).rejects.toThrow(ModuleException);

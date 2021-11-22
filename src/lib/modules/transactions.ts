@@ -34,7 +34,10 @@ export class Transactions extends BaseModule {
     externalTransaction: ExternalTransactionModel
   ) {
     try {
-      return await this.entityManager.insert(ExternalTransaction, externalTransaction);
+      return await this.entityManager.insert(
+        ExternalTransaction,
+        externalTransaction
+      );
     } catch (e) {
       console.error('ERROR: ', e.message);
       await this.rollbackTransaction();
@@ -119,7 +122,7 @@ export class Transactions extends BaseModule {
 
   async updateExternalTransaction(
     external_transaction_id: string,
-    externalTransaction: ExternalTransactionModel
+    externalTransaction: Partial<ExternalTransactionModel>
   ) {
     try {
       return await this.entityManager.update(
