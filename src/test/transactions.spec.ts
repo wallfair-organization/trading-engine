@@ -223,7 +223,8 @@ describe('Test get transaction queue by status', () => {
     await insertExternalTransaction(true, status);
     const result = await transactions.getTransactionQueueByStatus(
       status,
-      NetworkCode.ETH
+      NetworkCode.ETH,
+      ExternalTransactionOriginator.WITHDRAW
     );
     expect(result.length).toBeTruthy();
   });
@@ -236,7 +237,8 @@ describe('Test get transaction queue by status', () => {
     });
     const result = await transactions.getTransactionQueueByStatus(
       status,
-      NetworkCode.ETH
+      NetworkCode.ETH,
+      ExternalTransactionOriginator.WITHDRAW
     );
     expect(result.length).toBeFalsy();
   });

@@ -98,12 +98,13 @@ export class Transactions extends BaseModule {
 
   async getTransactionQueueByStatus(
     status: ExternalTransactionStatus,
-    network_code: NetworkCode
+    network_code: NetworkCode,
+    originator: ExternalTransactionOriginator
   ) {
     return await this.entityManager.find(ExternalTransaction, {
       where: {
         status,
-        originator: ExternalTransactionOriginator.WITHDRAW,
+        originator,
         network_code,
       },
       relations: ['transaction_queue'],
