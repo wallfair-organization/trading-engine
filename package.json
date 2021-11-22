@@ -9,10 +9,6 @@
   "scripts": {
     "build": "rm -rf ./build && tsc -p tsconfig.json",
     "build:test": "rm -rf ./build/test && tsc -p tsconfig.spec.json",
-    "cov": "run-s build test:unit cov:html cov:lcov && open-cli coverage/index.html",
-    "cov:check": "nyc report && nyc check-coverage --lines 50 --functions 50 --branches 50",
-    "cov:html": "nyc report --reporter=html",
-    "cov:lcov": "nyc report --reporter=lcov",
     "doc": "run-s doc:html && open-cli build/docs/index.html",
     "doc:html": "typedoc src/ --exclude **/*.spec.ts --target ES6 --mode file --out build/docs",
     "doc:json": "typedoc src/ --exclude **/*.spec.ts --target ES6 --mode file --json build/docs/typedoc.json",
@@ -24,14 +20,13 @@
     "migration:generate": "npm run typeorm migration:generate -- -n",
     "migration:run": "npm run typeorm migration:run",
     "schema:drop": "npm run typeorm schema:drop",
-    "test": "run-s build:test test:lint test:cov",
+    "test": "run-s build:test test:*",
     "test:lint": "eslint src --ext .ts",
-    "test:unit": "jest -i --detectOpenHandles --passWithNoTests --forceExit",
-    "test:cov": "jest -i --detectOpenHandles --passWithNoTests --forceExit --coverage",
+    "test:unit": "jest -i --detectOpenHandles --passWithNoTests --forceExit --coverage --verbose true --silent",
     "typeorm": "node --require ts-node/register ./node_modules/typeorm/cli.js --config src/db/config.ts",
     "version": "standard-version",
-    "prepare-husky": "run-s fix test:lint cov",
-    "prepare-release": "run-s test cov:check version"
+    "prepare-husky": "run-s fix test",
+    "prepare-release": "run-s test version"
   },
   "engines": {
     "node": ">=10"
@@ -98,7 +93,7 @@
   },
   "jest": {
     "roots": [
-      "<rootDir>/src"
+      "src"
     ],
     "transform": {
       "^.+\\.(ts|tsx)?$": "ts-jest",
@@ -106,16 +101,23 @@
     },
     "preset": "ts-jest",
     "collectCoverageFrom": [
-      "src/lib/**/*.ts",
-      "src/db/entities/**/*.ts",
-      "src/db/subscribers/**/*.ts"
+      "src/**/*.ts"
     ],
     "coveragePathIgnorePatterns": [
-      "src/lib/main.ts"
+      "src/lib/main.ts",
+      "src/db/migrations"
     ],
     "globals": {
       "ts-jest": {
         "tsconfig": "tsconfig.spec.json"
+      }
+    },
+    "coverageThreshold": {
+      "global": {
+        "branches": 95,
+        "functions": 95,
+        "lines": 95,
+        "statements": 95
       }
     }
   }
