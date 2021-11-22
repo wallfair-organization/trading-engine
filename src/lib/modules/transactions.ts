@@ -1,4 +1,4 @@
-import { EntityManager } from 'typeorm';
+import { EntityManager, In } from 'typeorm';
 import { ExternalTransaction } from '../../db/entities/ExternalTransaction';
 import { Transaction } from '../../db/entities/Transaction';
 import {
@@ -6,6 +6,7 @@ import {
   ExternalTransactionOriginator,
   ExternalTransactionStatus,
   NetworkCode,
+  TransactionOrder,
 } from '../models';
 import { Transaction as TransactionModel } from '../models/transaction';
 import { TransactionQueue as TransactionQueueModel } from '../models/transaction_queue';
@@ -96,21 +97,23 @@ export class Transactions extends BaseModule {
     });
   }
 
-  async getTransactionQueueByStatus(
-    status: ExternalTransactionStatus,
+  async getTransactionQueueByStatuses(
+    statuses: ExternalTransactionStatus[],
     network_code: NetworkCode,
-    originator: ExternalTransactionOriginator
+    originator: ExternalTransactionOriginator,
+    limit = 10,
+    order: TransactionOrder = TransactionOrder.ASC
   ) {
     return await this.entityManager.find(ExternalTransaction, {
       where: {
-        status,
+        status: In(statuses),
         originator,
         network_code,
       },
       relations: ['transaction_queue'],
-      take: 100,
+      take: limit,
       order: {
-        created_at: 'ASC',
+        created_at: order,
       },
     });
   }

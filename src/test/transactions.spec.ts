@@ -221,8 +221,8 @@ describe('Test get transaction queue by status', () => {
   test('when found', async () => {
     const status = ExternalTransactionStatus.SCHEDULED;
     await insertExternalTransaction(true, status);
-    const result = await transactions.getTransactionQueueByStatus(
-      status,
+    const result = await transactions.getTransactionQueueByStatuses(
+      [status],
       NetworkCode.ETH,
       ExternalTransactionOriginator.WITHDRAW
     );
@@ -235,8 +235,8 @@ describe('Test get transaction queue by status', () => {
     await entityManager.delete(ExternalTransaction, {
       status,
     });
-    const result = await transactions.getTransactionQueueByStatus(
-      status,
+    const result = await transactions.getTransactionQueueByStatuses(
+      [status],
       NetworkCode.ETH,
       ExternalTransactionOriginator.WITHDRAW
     );

@@ -13,6 +13,7 @@ export {
   ExternalTransactionOriginator,
   ExternalTransactionStatus,
   NetworkCode,
+  TransactionOrder,
 } from './lib/models';
 export {
   Account,
