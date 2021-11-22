@@ -57,27 +57,16 @@ export class Account extends BaseModule {
   }
 
   async linkEthereumAccount(userId: string, ethAccount: string) {
-    try {
-      const qb = this.entityManager.createQueryBuilder();
-
-      await qb
-        .insert()
-        .into(User)
-        .values({
+    return await this.entityManager.save(AccountEntity, {
+      owner_account: ethAccount,
+      account_namespace: AccountNamespace.ETH,
+      symbol: 'WFAIR',
+      balance: '0',
+      users: [
+        {
           user_id: userId,
-        })
-        .orIgnore()
-        .execute();
-
-      await qb.relation(User, 'accounts').of(userId).add({
-        owner_account: ethAccount,
-        account_namespace: AccountNamespace.ETH,
-        symbol: 'WFAIR',
-      });
-    } catch (e) {
-      console.error('LINK ACCOUNT: ', e.message);
-      await this.rollbackTransaction();
-      throw new ModuleException('Failed to link account');
-    }
+        },
+      ],
+    });
   }
 }

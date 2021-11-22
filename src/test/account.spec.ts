@@ -4,6 +4,7 @@ import { Account } from '../lib/modules';
 import { Account as AccountEntity } from '../db/entities/Account';
 import { AccountNamespace } from '../lib/models';
 import { ModuleException } from '../lib/modules/exceptions/module-exception';
+import { User } from '../db/entities/User';
 
 let entityManager: EntityManager;
 let connection: Connection;
@@ -93,35 +94,99 @@ describe('Test create account', () => {
 });
 
 describe('Test link account', () => {
-  test('when successful', async () => {
+  test('when both user and account exist', async () => {
     const walletOwner = '0xnewwallet';
-    await entityManager.insert(AccountEntity, {
-      owner_account: walletOwner,
-      account_namespace: AccountNamespace.ETH,
-      symbol: WFAIR,
-      balance: '0',
-    });
-    await expect(
-      account.linkEthereumAccount(USER_ID, walletOwner)
-    ).resolves.not.toThrow(ModuleException);
+    await insertAccount(walletOwner);
+
+    const user = await entityManager.find(User, { user_id: USER_ID });
+    const accountEntity = await findAccount(walletOwner);
+    expect(user).toBeTruthy();
+    expect(accountEntity.users.length).toBeFalsy();
+
+    const result = await account.linkEthereumAccount(USER_ID, walletOwner);
+    expect(result.users.length).toBeGreaterThan(0);
   });
 
-  test('when user does not exist', async () => {
+  test('when user does not exist but account does', async () => {
     const walletOwner = '0xwalletwithoutuser';
-    await entityManager.insert(AccountEntity, {
+    const userId = 'non-existing-user-id';
+    await insertAccount(walletOwner);
+
+    const user = await entityManager.findOne(User, { user_id: userId });
+    const accountEntity = await findAccount(walletOwner);
+    expect(user).toBeUndefined();
+    expect(accountEntity.users.length).toBeFalsy();
+
+    const result = await account.linkEthereumAccount(userId, walletOwner);
+    expect(result.users.length).toBeGreaterThan(0);
+  });
+
+  test('when account does not exist but user does', async () => {
+    const walletOwner = 'non-existing-account';
+
+    const user = await entityManager.findOne(User, { user_id: USER_ID });
+    const accountEntity = await findAccount(walletOwner);
+    expect(user).toBeTruthy();
+    expect(accountEntity).toBeUndefined();
+
+    const result = await account.linkEthereumAccount(USER_ID, walletOwner);
+    expect(result.users.length).toBeGreaterThan(0);
+  });
+
+  test('when account is linked to another user', async () => {
+    const walletOwner = '0xwalletlinked';
+    const userId = '0xuserlinked';
+    await entityManager.save(AccountEntity, {
       owner_account: walletOwner,
       account_namespace: AccountNamespace.ETH,
       symbol: WFAIR,
       balance: '0',
+      users: [
+        {
+          user_id: userId,
+        },
+      ],
     });
-    await expect(
-      account.linkEthereumAccount('non-existing-user-id', walletOwner)
-    ).resolves.not.toThrow(ModuleException);
+
+    const accountEntity = await findAccount(walletOwner);
+    expect(accountEntity.users.find((u) => u.user_id == userId)).toBeTruthy();
+
+    const result = await account.linkEthereumAccount(USER_ID, walletOwner);
+    expect(
+      accountEntity.users.find((u) => u.user_id == USER_ID)
+    ).toBeUndefined();
+    expect(result.users.find((u) => u.user_id === USER_ID)).toBeTruthy();
   });
 
   test('when already linked', async () => {
     await expect(
       account.linkEthereumAccount(USER_ID, WALLET_ACCOUNT)
-    ).rejects.toThrow(ModuleException);
+    ).resolves.not.toThrow(ModuleException);
   });
 });
+
+const insertAccount = async (owner: string) => {
+  return await entityManager
+    .createQueryBuilder()
+    .insert()
+    .into(AccountEntity)
+    .values({
+      owner_account: owner,
+      account_namespace: AccountNamespace.ETH,
+      symbol: WFAIR,
+      balance: '0',
+    })
+    .returning('*')
+    .execute();
+};
+
+const findAccount = async (owner: string) => {
+  return await entityManager.findOne(AccountEntity, {
+    where: {
+      owner_account: owner,
+      account_namespace: AccountNamespace.ETH,
+      symbol: 'WFAIR',
+    },
+    relations: ['users'],
+  });
+};
