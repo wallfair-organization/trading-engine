@@ -56,22 +56,24 @@ export class Account extends BaseModule {
     }
   }
 
-  async linkEthereumAccount(
-    userId: string,
-    ethAccount: string,
-    balance: string
-  ) {
+  async linkEthereumAccount(userId: string, ethAccount: string) {
     try {
-      return await this.entityManager
-        .createQueryBuilder()
-        .relation(User, 'accounts')
-        .of(userId)
-        .add({
-          owner_account: ethAccount,
-          account_namespace: AccountNamespace.ETH,
-          symbol: 'WFAIR',
-          balance,
-        });
+      const qb = this.entityManager.createQueryBuilder();
+
+      await qb
+        .insert()
+        .into(User)
+        .values({
+          user_id: userId,
+        })
+        .orIgnore()
+        .execute();
+
+      await qb.relation(User, 'accounts').of(userId).add({
+        owner_account: ethAccount,
+        account_namespace: AccountNamespace.ETH,
+        symbol: 'WFAIR',
+      });
     } catch (e) {
       console.error('LINK ACCOUNT: ', e.message);
       await this.rollbackTransaction();

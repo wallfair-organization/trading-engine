@@ -102,13 +102,26 @@ describe('Test link account', () => {
       balance: '0',
     });
     await expect(
-      account.linkEthereumAccount(USER_ID, walletOwner, '0')
+      account.linkEthereumAccount(USER_ID, walletOwner)
+    ).resolves.not.toThrow(ModuleException);
+  });
+
+  test('when user does not exist', async () => {
+    const walletOwner = '0xwalletwithoutuser';
+    await entityManager.insert(AccountEntity, {
+      owner_account: walletOwner,
+      account_namespace: AccountNamespace.ETH,
+      symbol: WFAIR,
+      balance: '0',
+    });
+    await expect(
+      account.linkEthereumAccount('non-existing-user-id', walletOwner)
     ).resolves.not.toThrow(ModuleException);
   });
 
   test('when already linked', async () => {
     await expect(
-      account.linkEthereumAccount(USER_ID, WALLET_ACCOUNT, '0')
+      account.linkEthereumAccount(USER_ID, WALLET_ACCOUNT)
     ).rejects.toThrow(ModuleException);
   });
 });

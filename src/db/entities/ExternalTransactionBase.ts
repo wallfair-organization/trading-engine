@@ -35,6 +35,12 @@ export abstract class ExternalTransactionBase {
   @Column({ nullable: false })
   network_code: string = NetworkCode.ETH;
 
+  @Column({ nullable: true })
+  block_number: number;
+
+  @Column({ nullable: true })
+  internal_user_id: string;
+
   @CreateDateColumn({ type: 'timestamp with time zone' })
   created_at: Date;
 
