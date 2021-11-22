@@ -104,6 +104,7 @@
       "src/**/*.ts"
     ],
     "coveragePathIgnorePatterns": [
+      "src/index.ts",
       "src/lib/main.ts",
       "src/db/migrations"
     ],
