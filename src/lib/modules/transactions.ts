@@ -1,4 +1,4 @@
-import { EntityManager, In } from 'typeorm';
+import { EntityManager, In, IsNull, Not } from 'typeorm';
 import { ExternalTransaction } from '../../db/entities/ExternalTransaction';
 import { Transaction } from '../../db/entities/Transaction';
 import {
@@ -156,5 +156,22 @@ export class Transactions extends BaseModule {
       await this.rollbackTransaction();
       throw new ModuleException(e.message);
     }
+  }
+
+  async getLastExternalByBlockNumber(
+    originator: ExternalTransactionOriginator,
+    status: ExternalTransactionStatus
+  ) {
+    return await this.entityManager.findOne(ExternalTransaction, {
+      where: {
+        originator,
+        status,
+        block_number: Not(IsNull()),
+      },
+      relations: ['transaction_queue'],
+      order: {
+        block_number: TransactionOrder.DESC,
+      },
+    });
   }
 }

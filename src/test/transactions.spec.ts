@@ -1,4 +1,10 @@
-import { Connection, EntityManager, createConnection } from 'typeorm';
+import {
+  Connection,
+  EntityManager,
+  createConnection,
+  Not,
+  IsNull,
+} from 'typeorm';
 import config from './config/db-config';
 import { Transactions } from '../lib/modules';
 import {
@@ -304,5 +310,61 @@ describe('Test insert external transaction log', () => {
         status: null,
       })
     ).rejects.toThrow(ModuleException);
+  });
+});
+
+describe('Test get last external by block number', () => {
+  test('when there are entries with block number', async () => {
+    const block1 = 1;
+    const block2 = 2;
+
+    const template = {
+      originator: ExternalTransactionOriginator.DEPOSIT,
+      external_system: 'deposit',
+      status: ExternalTransactionStatus.COMPLETED,
+      external_transaction_id: '0xdeposit',
+      network_code: NetworkCode.ETH,
+    };
+
+    const firstTransaction = {
+      ...template,
+      block_number: block1,
+    };
+
+    const secondTransaction = {
+      ...template,
+      block_number: block2,
+    };
+
+    await entityManager.save(ExternalTransaction, [
+      firstTransaction,
+      secondTransaction,
+    ]);
+
+    const result = await transactions.getLastExternalByBlockNumber(
+      ExternalTransactionOriginator.DEPOSIT,
+      ExternalTransactionStatus.COMPLETED
+    );
+
+    expect(result.block_number).toBe(secondTransaction.block_number);
+  });
+
+  test('when entries with block number do not exist', async () => {
+    await entityManager.delete(TransactionQueue, {});
+    await entityManager.delete(ExternalTransaction, {
+      block_number: Not(IsNull()),
+    });
+    await entityManager.insert(ExternalTransaction, {
+      ...externalTransactionModel,
+      originator: ExternalTransactionOriginator.DEPOSIT,
+      status: ExternalTransactionStatus.COMPLETED,
+    });
+
+    const result = await transactions.getLastExternalByBlockNumber(
+      ExternalTransactionOriginator.DEPOSIT,
+      ExternalTransactionStatus.COMPLETED
+    );
+
+    expect(result).toBeUndefined();
   });
 });
