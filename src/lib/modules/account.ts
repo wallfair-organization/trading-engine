@@ -57,16 +57,23 @@ export class Account extends BaseModule {
   }
 
   async linkEthereumAccount(userId: string, ethAccount: string) {
-    return await this.entityManager.save(AccountEntity, {
+    const account = await this.findAccount(ethAccount);
+    const params = {
       owner_account: ethAccount,
       account_namespace: AccountNamespace.ETH,
       symbol: 'WFAIR',
-      balance: '0',
       users: [
         {
           user_id: userId,
         },
       ],
-    });
+    };
+
+    if (!account) {
+      params['balance'] = '0';
+    }
+
+    const result = await this.entityManager.save(AccountEntity, params);
+    return { ...account, ...result };
   }
 }
