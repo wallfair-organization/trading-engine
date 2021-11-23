@@ -278,4 +278,10 @@ describe('Test transfer', () => {
     expect(senderAccount.balance).toBe(senderBalance);
     expect(receiverAccount.balance).toBe(receiverBalance);
   });
+
+  test('when symbols are different', async () => {
+    await expect(
+      wallet.transfer({ ...sender, symbol: 'ETH' }, receiver, '10')
+    ).rejects.toThrow(ModuleException);
+  });
 });

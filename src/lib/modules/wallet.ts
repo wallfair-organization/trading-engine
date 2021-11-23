@@ -58,6 +58,10 @@ export class Wallet extends BaseModule {
     receiver: Beneficiary,
     amountToTransfer: string
   ) {
+    if (sender.symbol !== receiver.symbol) {
+      throw new ModuleException('Transfer not allowed');
+    }
+
     try {
       return await this.updateBalance([
         { beneficiary: sender, amount: '-' + amountToTransfer },
