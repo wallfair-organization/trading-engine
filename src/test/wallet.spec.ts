@@ -1,4 +1,4 @@
-import { Connection, createConnection, EntityManager } from 'typeorm';
+import { Connection, createConnection, EntityManager, IsNull } from 'typeorm';
 import config from './config/db-config';
 import dotenv from 'dotenv';
 import { User } from '../db/entities/User';
@@ -7,6 +7,7 @@ import { AccountNamespace } from '../lib/models';
 import { Wallet } from '../lib/modules';
 import { ModuleException } from '../lib/modules/exceptions/module-exception';
 import BigNumber from 'bignumber.js';
+import { Transaction } from '../db/entities/Transaction';
 
 dotenv.config();
 jest.setTimeout(1000000);
@@ -105,6 +106,14 @@ describe('Test mint', () => {
     const result = await wallet.mint(beneficiary, amount.toString());
 
     const newBalance = result.raw[0].balance;
+    const transaction = await entityManager.findOne(Transaction, {
+      where: {
+        sender_account: IsNull(),
+        receiver_account: beneficiary.owner,
+        amount: amount.toString(),
+      },
+    });
+    expect(transaction).toBeTruthy();
     expect(new BigNumber(account.balance).plus(amount).toString()).toBe(
       newBalance
     );
@@ -160,6 +169,14 @@ describe('Test burn', () => {
     const result = await wallet.burn(beneficiary, amount.toString());
 
     const newBalance = result.raw[0].balance;
+    const transaction = await entityManager.findOne(Transaction, {
+      where: {
+        sender_account: beneficiary.owner,
+        receiver_account: IsNull(),
+        amount: amount.toString(),
+      },
+    });
+    expect(transaction).toBeTruthy();
     expect(new BigNumber(oldBalance).toNumber()).toBeGreaterThan(
       new BigNumber(newBalance).toNumber()
     );
@@ -211,6 +228,14 @@ describe('Test transfer', () => {
       result.raw[
         result.identifiers.findIndex((i) => i.owner_account === receiver.owner)
       ].balance;
+    const transaction = await entityManager.findOne(Transaction, {
+      where: {
+        sender_account: sender.owner,
+        receiver_account: receiver.owner,
+        amount,
+      },
+    });
+    expect(transaction).toBeTruthy();
 
     expect(
       new BigNumber(senderBalance).minus(new BigNumber(amount)).toString()

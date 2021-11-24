@@ -4,6 +4,7 @@ import { Account } from '../../db/entities/Account';
 import { Beneficiary } from '../models/beneficiary';
 import { BaseModule } from './base-module';
 import { ModuleException } from './exceptions/module-exception';
+import { Transaction } from '../../db/entities/Transaction';
 
 export class Wallet extends BaseModule {
   one: number;
@@ -35,7 +36,15 @@ export class Wallet extends BaseModule {
 
   async mint(beneficiary: Beneficiary, amount: string) {
     try {
-      return await this.updateBalance([{ beneficiary, amount }]);
+      const balance = await this.updateBalance([{ beneficiary, amount }]);
+      await this.entityManager.insert(Transaction, {
+        sender_namespace: beneficiary.namespace,
+        receiver_namespace: beneficiary.namespace,
+        receiver_account: beneficiary.owner,
+        symbol: beneficiary.symbol,
+        amount: amount,
+      });
+      return balance;
     } catch (e) {
       console.error('MINTING ERROR: ', e.message);
       await this.rollbackTransaction();
@@ -45,7 +54,17 @@ export class Wallet extends BaseModule {
 
   async burn(beneficiary: Beneficiary, amount: string) {
     try {
-      return await this.updateBalance([{ beneficiary, amount: '-' + amount }]);
+      const balance = await this.updateBalance([
+        { beneficiary, amount: '-' + amount },
+      ]);
+      await this.entityManager.insert(Transaction, {
+        sender_namespace: beneficiary.namespace,
+        sender_account: beneficiary.owner,
+        receiver_namespace: beneficiary.namespace,
+        symbol: beneficiary.symbol,
+        amount: amount,
+      });
+      return balance;
     } catch (e) {
       console.error('BURN ERROR: ', e.message);
       await this.rollbackTransaction();
@@ -63,10 +82,19 @@ export class Wallet extends BaseModule {
     }
 
     try {
-      return await this.updateBalance([
+      const balance = await this.updateBalance([
         { beneficiary: sender, amount: '-' + amountToTransfer },
         { beneficiary: receiver, amount: amountToTransfer },
       ]);
+      await this.entityManager.insert(Transaction, {
+        sender_namespace: sender.namespace,
+        sender_account: sender.owner,
+        receiver_namespace: receiver.namespace,
+        receiver_account: receiver.owner,
+        symbol: sender.symbol,
+        amount: amountToTransfer,
+      });
+      return balance;
     } catch (e) {
       console.error('TRANSFER ERROR: ', e.message);
       await this.rollbackTransaction();

@@ -16,7 +16,7 @@ export class Transaction {
   })
   sender_namespace: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   @Index('sender_account_idx')
   sender_account: string;
 
@@ -25,14 +25,14 @@ export class Transaction {
   })
   receiver_namespace: string;
 
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   @Index('receiver_account_idx')
   receiver_account: string;
 
   @Column({ nullable: false })
   symbol: string;
 
-  @Column({ type: 'decimal', scale: 0, nullable: false })
+  @Column({ type: 'decimal', nullable: false })
   amount: string;
 
   @CreateDateColumn({ type: 'timestamp with time zone' })
