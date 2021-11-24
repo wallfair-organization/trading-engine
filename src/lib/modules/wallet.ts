@@ -36,18 +36,13 @@ export class Wallet extends BaseModule {
 
   async mint(beneficiary: Beneficiary, amount: string) {
     try {
-      let balance;
-      await this.runInTransaction(async (em: EntityManager) => {
-        balance = await this.updateBalance([{ beneficiary, amount }], em);
-        await em.insert(Transaction, {
-          sender_namespace: beneficiary.namespace,
-          receiver_namespace: beneficiary.namespace,
-          receiver_account: beneficiary.owner,
-          symbol: beneficiary.symbol,
-          amount: amount,
-        });
-      });
-      return balance;
+      return await this.updateBalance([{ beneficiary, amount }], {
+        sender_namespace: beneficiary.namespace,
+        receiver_namespace: beneficiary.namespace,
+        receiver_account: beneficiary.owner,
+        symbol: beneficiary.symbol,
+        amount: amount,
+      });;
     } catch (e) {
       console.error('MINTING ERROR: ', e.message);
       await this.rollbackTransaction();
@@ -57,20 +52,16 @@ export class Wallet extends BaseModule {
 
   async burn(beneficiary: Beneficiary, amount: string) {
     try {
-      let balance;
-      await this.runInTransaction(async (em: EntityManager) => {
-        balance = await this.updateBalance([
-          { beneficiary, amount: '-' + amount },
-        ], em);
-        await em.insert(Transaction, {
+      return await this.updateBalance(
+        [{ beneficiary, amount: '-' + amount }],
+        {
           sender_namespace: beneficiary.namespace,
           sender_account: beneficiary.owner,
           receiver_namespace: beneficiary.namespace,
           symbol: beneficiary.symbol,
           amount: amount,
-        });
-      });
-      return balance;
+        }
+      );;
     } catch (e) {
       console.error('BURN ERROR: ', e.message);
       await this.rollbackTransaction();
@@ -88,22 +79,20 @@ export class Wallet extends BaseModule {
     }
 
     try {
-      let balances;
-      await this.runInTransaction(async (em: EntityManager) => {
-        balances = await this.updateBalance([
+      return await this.updateBalance(
+        [
           { beneficiary: sender, amount: '-' + amountToTransfer },
           { beneficiary: receiver, amount: amountToTransfer },
-        ], em);
-        await em.insert(Transaction, {
+        ],
+        {
           sender_namespace: sender.namespace,
           sender_account: sender.owner,
           receiver_namespace: receiver.namespace,
           receiver_account: receiver.owner,
           symbol: sender.symbol,
           amount: amountToTransfer,
-        });
-      })
-      return balances;
+        }
+      );
     } catch (e) {
       console.error('TRANSFER ERROR: ', e.message);
       await this.rollbackTransaction();
@@ -113,26 +102,34 @@ export class Wallet extends BaseModule {
 
   private async updateBalance(
     values: { beneficiary: Beneficiary; amount: string }[],
-    entityManager: EntityManager
+    transaction: Partial<Transaction>,
   ): Promise<InsertResult> {
-    return await entityManager
-      .createQueryBuilder()
-      .insert()
-      .into(Account)
-      .values(
-        values.map((v) => {
-          return {
-            owner_account: v.beneficiary.owner,
-            account_namespace: v.beneficiary.namespace,
-            symbol: v.beneficiary.symbol,
-            balance: v.amount,
-          };
-        })
-      )
-      .onConflict(
-        `("owner_account", "account_namespace", "symbol") DO UPDATE SET "balance" = account.balance + EXCLUDED.balance`
-      )
-      .returning('balance')
-      .execute();
+    let result;
+
+    await this.runInTransaction(async (em: EntityManager) => {
+      result = await em
+        .createQueryBuilder()
+        .insert()
+        .into(Account)
+        .values(
+          values.map((v) => {
+            return {
+              owner_account: v.beneficiary.owner,
+              account_namespace: v.beneficiary.namespace,
+              symbol: v.beneficiary.symbol,
+              balance: v.amount,
+            };
+          })
+        )
+        .onConflict(
+          `("owner_account", "account_namespace", "symbol") DO UPDATE SET "balance" = account.balance + EXCLUDED.balance`
+        )
+        .returning('balance')
+        .execute();
+
+      await em.insert(Transaction, transaction);
+    });
+
+    return result;
   }
 }
