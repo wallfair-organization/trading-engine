@@ -36,13 +36,16 @@ export class Wallet extends BaseModule {
 
   async mint(beneficiary: Beneficiary, amount: string) {
     try {
-      const balance = await this.updateBalance([{ beneficiary, amount }]);
-      await this.entityManager.insert(Transaction, {
-        sender_namespace: beneficiary.namespace,
-        receiver_namespace: beneficiary.namespace,
-        receiver_account: beneficiary.owner,
-        symbol: beneficiary.symbol,
-        amount: amount,
+      let balance;
+      await this.runInTransaction(async (em: EntityManager) => {
+        balance = await this.updateBalance([{ beneficiary, amount }], em);
+        await em.insert(Transaction, {
+          sender_namespace: beneficiary.namespace,
+          receiver_namespace: beneficiary.namespace,
+          receiver_account: beneficiary.owner,
+          symbol: beneficiary.symbol,
+          amount: amount,
+        });
       });
       return balance;
     } catch (e) {
@@ -54,15 +57,18 @@ export class Wallet extends BaseModule {
 
   async burn(beneficiary: Beneficiary, amount: string) {
     try {
-      const balance = await this.updateBalance([
-        { beneficiary, amount: '-' + amount },
-      ]);
-      await this.entityManager.insert(Transaction, {
-        sender_namespace: beneficiary.namespace,
-        sender_account: beneficiary.owner,
-        receiver_namespace: beneficiary.namespace,
-        symbol: beneficiary.symbol,
-        amount: amount,
+      let balance;
+      await this.runInTransaction(async (em: EntityManager) => {
+        balance = await this.updateBalance([
+          { beneficiary, amount: '-' + amount },
+        ], em);
+        await em.insert(Transaction, {
+          sender_namespace: beneficiary.namespace,
+          sender_account: beneficiary.owner,
+          receiver_namespace: beneficiary.namespace,
+          symbol: beneficiary.symbol,
+          amount: amount,
+        });
       });
       return balance;
     } catch (e) {
@@ -82,19 +88,22 @@ export class Wallet extends BaseModule {
     }
 
     try {
-      const balance = await this.updateBalance([
-        { beneficiary: sender, amount: '-' + amountToTransfer },
-        { beneficiary: receiver, amount: amountToTransfer },
-      ]);
-      await this.entityManager.insert(Transaction, {
-        sender_namespace: sender.namespace,
-        sender_account: sender.owner,
-        receiver_namespace: receiver.namespace,
-        receiver_account: receiver.owner,
-        symbol: sender.symbol,
-        amount: amountToTransfer,
-      });
-      return balance;
+      let balances;
+      await this.runInTransaction(async (em: EntityManager) => {
+        balances = await this.updateBalance([
+          { beneficiary: sender, amount: '-' + amountToTransfer },
+          { beneficiary: receiver, amount: amountToTransfer },
+        ], em);
+        await em.insert(Transaction, {
+          sender_namespace: sender.namespace,
+          sender_account: sender.owner,
+          receiver_namespace: receiver.namespace,
+          receiver_account: receiver.owner,
+          symbol: sender.symbol,
+          amount: amountToTransfer,
+        });
+      })
+      return balances;
     } catch (e) {
       console.error('TRANSFER ERROR: ', e.message);
       await this.rollbackTransaction();
@@ -103,11 +112,11 @@ export class Wallet extends BaseModule {
   }
 
   private async updateBalance(
-    values: { beneficiary: Beneficiary; amount: string }[]
+    values: { beneficiary: Beneficiary; amount: string }[],
+    entityManager: EntityManager
   ): Promise<InsertResult> {
-    return await this.entityManager
+    return await entityManager
       .createQueryBuilder()
-      .useTransaction(!this.entityManager.queryRunner?.isTransactionActive)
       .insert()
       .into(Account)
       .values(

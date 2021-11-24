@@ -124,6 +124,12 @@ describe('Test mint', () => {
     await expect(wallet.mint(beneficiary, amount.toString())).rejects.toThrow(
       ModuleException
     );
+    const account = await entityManager.findOne(Account, {
+      where: {
+        owner_account: beneficiary.owner,
+      },
+    });
+    expect(account.balance).toBe('0');
   });
 
   test('when user does not exist', async () => {
@@ -188,16 +194,20 @@ describe('Test burn', () => {
     const account = await entityManager.findOne(Account, {
       where: { owner_account: owner },
     });
-
     expect(account).toBeUndefined();
 
     await expect(wallet.burn(beneficiary, amount.toString())).rejects.toThrow(
       ModuleException
     );
+
+    const accountAfterBurn = await entityManager.findOne(Account, {
+      where: { owner_account: owner },
+    });
+    expect(accountAfterBurn).toBeUndefined();
   });
 
   test('with exceeded balance', async () => {
-    await entityManager.save(Account, {
+    const account = await entityManager.save(Account, {
       owner_account: USER_ID,
       account_namespace: AccountNamespace.USR,
       symbol: WFAIR,
@@ -207,6 +217,11 @@ describe('Test burn', () => {
     await expect(wallet.burn(beneficiary, '30')).rejects.toThrow(
       ModuleException
     );
+
+    const accountAfterBurn = await entityManager.findOne(Account, {
+      where: { owner_account: account.owner_account },
+    });
+    expect(accountAfterBurn.balance).toBe(account.balance);
   });
 });
 
