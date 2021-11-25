@@ -1,7 +1,6 @@
 import {
   Connection,
   EntityManager,
-  createConnection,
   Not,
   IsNull,
 } from 'typeorm';
@@ -16,6 +15,7 @@ import {
 import { ModuleException } from '../lib/modules/exceptions/module-exception';
 import { ExternalTransaction } from '../db/entities/ExternalTransaction';
 import { TransactionQueue } from '../db/entities/TransactionQueue';
+import { initDb } from "../lib/main";
 
 let entityManager: EntityManager;
 let connection: Connection;
@@ -56,7 +56,7 @@ const insertExternalTransaction = async (
 };
 
 beforeAll(async () => {
-  connection = await createConnection(config);
+  connection = await initDb(config);
   entityManager = new EntityManager(connection, connection.createQueryRunner());
   console.log(entityManager.queryRunner?.isTransactionActive);
   transactions = new Transactions();

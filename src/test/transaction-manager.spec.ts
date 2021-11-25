@@ -1,20 +1,24 @@
-import { Connection, createConnection, EntityManager } from 'typeorm';
+import {
+  Connection,
+  EntityManager,
+} from 'typeorm';
 import config from './config/db-config';
 import {
   AccountNamespace,
   ExternalTransactionOriginator,
   ExternalTransactionStatus,
   NetworkCode,
-  TransactionManager,
-} from '..';
+} from '../lib/models';
+import { ModuleException } from '../lib/modules/exceptions/module-exception';
+import { ExternalTransaction } from '../db/entities/ExternalTransaction';
 import { Account } from '../db/entities/Account';
 import { User } from '../db/entities/User';
 import { Transaction } from '../db/entities/Transaction';
-import { ExternalTransaction } from '../db/entities/ExternalTransaction';
-import { ModuleException } from '../lib/modules/exceptions/module-exception';
+import { initDb } from "../lib/main";
+import { TransactionManager } from "../lib/modules";
 
-let connection: Connection;
 let entityManager: EntityManager;
+let connection: Connection;
 
 const USER_ID = '615bf607f04fbb15aa5dd367';
 const WFAIR = 'WFAIR';
@@ -40,7 +44,7 @@ const externalTransaction = {
 };
 
 beforeAll(async () => {
-  connection = await createConnection(config);
+  connection = await initDb(config);
   entityManager = new EntityManager(connection, connection.createQueryRunner());
 });
 
