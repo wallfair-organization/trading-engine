@@ -2,7 +2,6 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import 'reflect-metadata';
-import { initDb } from "./lib/main";
 
 export * from './lib/main';
 export {
@@ -22,4 +21,3 @@ export {
   Transactions,
   TransactionManager,
 } from './lib/modules';
-(async () => await initDb())();
