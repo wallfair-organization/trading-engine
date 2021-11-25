@@ -1,4 +1,4 @@
-import { Connection, createConnection, EntityManager } from 'typeorm';
+import { Connection, EntityManager } from 'typeorm';
 import config from './config/db-config';
 import dotenv from 'dotenv';
 import { User } from '../db/entities/User';
@@ -7,6 +7,7 @@ import { AccountNamespace } from '../lib/models';
 import { Wallet } from '../lib/modules';
 import { ModuleException } from '../lib/modules/exceptions/module-exception';
 import BigNumber from 'bignumber.js';
+import { initDb } from "../lib/main";
 
 dotenv.config();
 jest.setTimeout(1000000);
@@ -54,7 +55,7 @@ const saveBeneficiaries = async (
 };
 
 beforeAll(async () => {
-  connection = await createConnection(config);
+  connection = await initDb(config);
   entityManager = new EntityManager(connection, connection.createQueryRunner());
   wallet = new Wallet();
 });
