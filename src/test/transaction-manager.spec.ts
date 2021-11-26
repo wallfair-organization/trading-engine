@@ -23,14 +23,6 @@ const beneficiary = {
   namespace: AccountNamespace.USR,
   symbol: WFAIR,
 };
-const transaction = {
-  sender_account: USER_ID,
-  receiver_account: 'receiver',
-  sender_namespace: AccountNamespace.ETH,
-  receiver_namespace: AccountNamespace.ETH,
-  symbol: WFAIR,
-  amount: '100',
-};
 const externalTransaction = {
   originator: ExternalTransactionOriginator.DEPOSIT,
   external_system: 'deposit',
@@ -76,7 +68,6 @@ describe('Successful transaction', () => {
     await transactionManager.startTransaction();
 
     await transactionManager.wallet.mint(beneficiary, '100');
-    await transactionManager.transactions.insertTransaction(transaction);
     await transactionManager.transactions.insertExternalTransaction(
       externalTransaction
     );
@@ -86,13 +77,11 @@ describe('Successful transaction', () => {
     const account = await entityManager.findOne(Account, {
       where: { owner_account: USER_ID },
     });
-    const transactionsCount = await entityManager.count(Transaction);
     const externalTransactionsCount = await entityManager.count(
       ExternalTransaction
     );
 
     expect(account.balance).toBe('100');
-    expect(transactionsCount).toBe(1);
     expect(externalTransactionsCount).toBe(1);
   });
 });
@@ -104,7 +93,6 @@ describe('Failed transaction', () => {
     await transactionManager.startTransaction();
 
     await transactionManager.wallet.mint(beneficiary, '100');
-    await transactionManager.transactions.insertTransaction(transaction);
 
     await expect(
       transactionManager.transactions.insertExternalTransaction({
@@ -118,13 +106,11 @@ describe('Failed transaction', () => {
     const account = await entityManager.findOne(Account, {
       where: { owner_account: USER_ID },
     });
-    const transactionsCount = await entityManager.count(Transaction);
     const externalTransactionsCount = await entityManager.count(
       ExternalTransaction
     );
 
     expect(account.balance).toBe('0');
-    expect(transactionsCount).toBe(0);
     expect(externalTransactionsCount).toBe(0);
   });
 
