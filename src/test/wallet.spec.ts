@@ -1,4 +1,4 @@
-import { Connection, EntityManager, IsNull } from 'typeorm';
+import { Connection, createConnection, EntityManager, IsNull } from 'typeorm';
 import config from './config/db-config';
 import dotenv from 'dotenv';
 import { User } from '../db/entities/User';
@@ -7,7 +7,6 @@ import { AccountNamespace } from '../lib/models';
 import { Wallet } from '../lib/modules';
 import { ModuleException } from '../lib/modules/exceptions/module-exception';
 import BigNumber from 'bignumber.js';
-import { initDb } from '../lib/main';
 import { Transaction } from '../db/entities/Transaction';
 
 dotenv.config();
@@ -56,7 +55,7 @@ const saveBeneficiaries = async (
 };
 
 beforeAll(async () => {
-  connection = await initDb(config);
+  connection = await createConnection(config);
   entityManager = new EntityManager(connection, connection.createQueryRunner());
   wallet = new Wallet();
 });

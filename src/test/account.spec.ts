@@ -1,11 +1,10 @@
-import { Connection, EntityManager } from 'typeorm';
+import { Connection, createConnection, EntityManager } from 'typeorm';
 import config from './config/db-config';
 import { Account } from '../lib/modules';
 import { Account as AccountEntity } from '../db/entities/Account';
 import { AccountNamespace } from '../lib/models';
 import { ModuleException } from '../lib/modules/exceptions/module-exception';
 import { User } from '../db/entities/User';
-import { initDb } from '../lib/main';
 
 let entityManager: EntityManager;
 let connection: Connection;
@@ -16,7 +15,7 @@ const WALLET_ACCOUNT = '0xtestwallet';
 const WFAIR = 'WFAIR';
 
 beforeAll(async () => {
-  connection = await initDb(config);
+  connection = await createConnection(config);
   entityManager = new EntityManager(connection, connection.createQueryRunner());
   account = new Account();
 });
