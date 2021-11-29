@@ -165,6 +165,28 @@ describe('Test link account', () => {
   });
 });
 
+describe('Test user creation', () => {
+  test('when successful', async () => {
+    const userId = 'new_user_id';
+    await account.createUser(userId);
+
+    const user = entityManager.findOne(User, { user_id: userId });
+    const userAccount = entityManager.findOne(AccountEntity, {
+      owner_account: userId,
+    });
+
+    expect(user).toBeTruthy();
+    expect(userAccount).toBeTruthy();
+  });
+
+  test('when already exists', async () => {
+    const userId = 'new_user_id_fail';
+    await entityManager.insert(User, { user_id: userId });
+
+    await expect(account.createUser(userId)).rejects.toThrow(ModuleException);
+  });
+});
+
 const insertAccount = async (owner: string) => {
   return await entityManager
     .createQueryBuilder()
