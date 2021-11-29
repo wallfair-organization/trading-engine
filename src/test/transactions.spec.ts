@@ -63,34 +63,6 @@ afterAll(async () => {
   await connection.close();
 });
 
-describe('Test insert transaction', () => {
-  test('when successful', async () => {
-    const result = await transactions.insertTransaction({
-      sender_account: 'sender',
-      receiver_account: 'receiver',
-      sender_namespace: AccountNamespace.ETH,
-      receiver_namespace: AccountNamespace.ETH,
-      symbol: WFAIR,
-      amount: '1',
-    });
-
-    expect(result.identifiers.length).toBeTruthy();
-  });
-
-  test('when it fails', async () => {
-    await expect(
-      transactions.insertTransaction({
-        sender_account: undefined,
-        receiver_account: 'receiver',
-        sender_namespace: AccountNamespace.ETH,
-        receiver_namespace: AccountNamespace.ETH,
-        symbol: WFAIR,
-        amount: '1',
-      })
-    ).rejects.toThrow(ModuleException);
-  });
-});
-
 describe('Test insert external transaction', () => {
   test('when successful', async () => {
     const result = await transactions.insertExternalTransaction({

@@ -12,7 +12,7 @@ export class Account {
   @PrimaryColumn()
   symbol: string;
 
-  @Column({ type: 'decimal', scale: 0, nullable: false })
+  @Column({ type: 'decimal', nullable: false })
   balance: string;
 
   @ManyToMany(() => User, (user) => user.accounts, {

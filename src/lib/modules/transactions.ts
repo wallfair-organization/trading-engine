@@ -1,6 +1,5 @@
 import { EntityManager, In, IsNull, Not } from 'typeorm';
 import { ExternalTransaction } from '../../db/entities/ExternalTransaction';
-import { Transaction } from '../../db/entities/Transaction';
 import {
   ExternalTransaction as ExternalTransactionModel,
   ExternalTransactionOriginator,
@@ -8,7 +7,6 @@ import {
   NetworkCode,
   TransactionOrder,
 } from '../models';
-import { Transaction as TransactionModel } from '../models/transaction';
 import { TransactionQueue as TransactionQueueModel } from '../models/transaction_queue';
 import { ExternalTransactionLog as ExternalTransactionLogModel } from '../models/external_transaction_log';
 import { BaseModule } from './base-module';
@@ -19,16 +17,6 @@ import { ExternalTransactionLog } from '../../db/entities/ExternalTransactionLog
 export class Transactions extends BaseModule {
   constructor(entityManager?: EntityManager) {
     super(entityManager);
-  }
-
-  async insertTransaction(transaction: TransactionModel) {
-    try {
-      return await this.entityManager.insert(Transaction, transaction);
-    } catch (e) {
-      console.error('ERROR: ', e.message);
-      await this.rollbackTransaction();
-      throw new ModuleException(e.message);
-    }
   }
 
   async insertExternalTransaction(
