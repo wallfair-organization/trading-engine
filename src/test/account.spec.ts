@@ -5,7 +5,7 @@ import { Account as AccountEntity } from '../db/entities/Account';
 import { AccountNamespace } from '../lib/models';
 import { ModuleException } from '../lib/modules/exceptions/module-exception';
 import { User } from '../db/entities/User';
-import { initDb } from "../lib/main";
+import { initDb } from '../lib/main';
 
 let entityManager: EntityManager;
 let connection: Connection;

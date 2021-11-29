@@ -7,7 +7,7 @@ import { AccountNamespace } from '../lib/models';
 import { Wallet } from '../lib/modules';
 import { ModuleException } from '../lib/modules/exceptions/module-exception';
 import BigNumber from 'bignumber.js';
-import { initDb } from "../lib/main";
+import { initDb } from '../lib/main';
 
 dotenv.config();
 jest.setTimeout(1000000);

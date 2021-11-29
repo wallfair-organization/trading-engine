@@ -1,9 +1,4 @@
-import {
-  Connection,
-  EntityManager,
-  Not,
-  IsNull,
-} from 'typeorm';
+import { Connection, EntityManager, Not, IsNull } from 'typeorm';
 import config from './config/db-config';
 import { Transactions } from '../lib/modules';
 import {
@@ -15,7 +10,7 @@ import {
 import { ModuleException } from '../lib/modules/exceptions/module-exception';
 import { ExternalTransaction } from '../db/entities/ExternalTransaction';
 import { TransactionQueue } from '../db/entities/TransactionQueue';
-import { initDb } from "../lib/main";
+import { initDb } from '../lib/main';
 
 let entityManager: EntityManager;
 let connection: Connection;

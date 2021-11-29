@@ -1,7 +1,4 @@
-import {
-  Connection,
-  EntityManager,
-} from 'typeorm';
+import { Connection, EntityManager } from 'typeorm';
 import config from './config/db-config';
 import {
   AccountNamespace,
@@ -14,8 +11,8 @@ import { ExternalTransaction } from '../db/entities/ExternalTransaction';
 import { Account } from '../db/entities/Account';
 import { User } from '../db/entities/User';
 import { Transaction } from '../db/entities/Transaction';
-import { initDb } from "../lib/main";
-import { TransactionManager } from "../lib/modules";
+import { initDb } from '../lib/main';
+import { TransactionManager } from '../lib/modules';
 
 let entityManager: EntityManager;
 let connection: Connection;
