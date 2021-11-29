@@ -1,6 +1,6 @@
 import { User } from '../../db/entities/User';
 import { Account as AccountEntity } from '../../db/entities/Account';
-import { EntityManager } from 'typeorm';
+import { EntityManager, InsertResult } from 'typeorm';
 import { BaseModule } from './base-module';
 import { ModuleException } from './exceptions/module-exception';
 import { AccountNamespace } from '../models/enums/AccountNamespace';
@@ -75,5 +75,39 @@ export class Account extends BaseModule {
 
     const result = await this.entityManager.save(AccountEntity, params);
     return { ...account, ...result };
+  }
+
+  async createUser(userId: string) {
+    try {
+      const account = {
+        owner_account: userId,
+        account_namespace: AccountNamespace.USR,
+        symbol: 'WFAIR',
+      };
+
+      let userCreated: InsertResult, accountCreated: InsertResult;
+
+      await this.runInTransaction(async (em: EntityManager) => {
+        userCreated = await em.insert(User, { user_id: userId });
+        accountCreated = await em.insert(AccountEntity, {
+          ...account,
+          balance: '0',
+        });
+        await em
+          .createQueryBuilder()
+          .relation(User, 'accounts')
+          .of(userId)
+          .add(account);
+      });
+
+      return {
+        ...{ ...userCreated.raw[0], ...userCreated.identifiers[0] },
+        ...{ ...accountCreated.raw[0], ...accountCreated.identifiers[0] },
+      };
+    } catch (e) {
+      console.error('USER CREATION: ', e.message);
+      this.rollbackTransaction();
+      throw new ModuleException('User creation failed');
+    }
   }
 }

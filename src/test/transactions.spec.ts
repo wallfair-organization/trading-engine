@@ -1,4 +1,4 @@
-import { Connection, EntityManager, Not, IsNull } from 'typeorm';
+import { Connection, createConnection, EntityManager, Not, IsNull } from 'typeorm';
 import config from './config/db-config';
 import { Transactions } from '../lib/modules';
 import {
@@ -10,7 +10,6 @@ import {
 import { ModuleException } from '../lib/modules/exceptions/module-exception';
 import { ExternalTransaction } from '../db/entities/ExternalTransaction';
 import { TransactionQueue } from '../db/entities/TransactionQueue';
-import { initDb } from '../lib/main';
 
 let entityManager: EntityManager;
 let connection: Connection;
@@ -51,7 +50,7 @@ const insertExternalTransaction = async (
 };
 
 beforeAll(async () => {
-  connection = await initDb(config);
+  connection = await createConnection(config);
   entityManager = new EntityManager(connection, connection.createQueryRunner());
   console.log(entityManager.queryRunner?.isTransactionActive);
   transactions = new Transactions();
@@ -310,7 +309,8 @@ describe('Test get last external by block number', () => {
 
     const result = await transactions.getLastExternalByBlockNumber(
       ExternalTransactionOriginator.DEPOSIT,
-      ExternalTransactionStatus.COMPLETED
+      ExternalTransactionStatus.COMPLETED,
+      NetworkCode.ETH
     );
 
     expect(result.block_number).toBe(secondTransaction.block_number);
@@ -325,11 +325,13 @@ describe('Test get last external by block number', () => {
       ...externalTransactionModel,
       originator: ExternalTransactionOriginator.DEPOSIT,
       status: ExternalTransactionStatus.COMPLETED,
+      network_code: NetworkCode.ETH,
     });
 
     const result = await transactions.getLastExternalByBlockNumber(
       ExternalTransactionOriginator.DEPOSIT,
-      ExternalTransactionStatus.COMPLETED
+      ExternalTransactionStatus.COMPLETED,
+      NetworkCode.ETH
     );
 
     expect(result).toBeUndefined();

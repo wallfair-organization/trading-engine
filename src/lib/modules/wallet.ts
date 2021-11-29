@@ -7,11 +7,8 @@ import { ModuleException } from './exceptions/module-exception';
 import { Transaction } from '../../db/entities/Transaction';
 
 export class Wallet extends BaseModule {
-  one: number;
-
   constructor(entityManager?: EntityManager) {
     super(entityManager);
-    this.one = 10 ** 18;
   }
 
   async getBalance(userId: string) {
@@ -42,7 +39,7 @@ export class Wallet extends BaseModule {
         receiver_account: beneficiary.owner,
         symbol: beneficiary.symbol,
         amount: amount,
-      });;
+      });
     } catch (e) {
       console.error('MINTING ERROR: ', e.message);
       await this.rollbackTransaction();
@@ -52,16 +49,13 @@ export class Wallet extends BaseModule {
 
   async burn(beneficiary: Beneficiary, amount: string) {
     try {
-      return await this.updateBalance(
-        [{ beneficiary, amount: '-' + amount }],
-        {
-          sender_namespace: beneficiary.namespace,
-          sender_account: beneficiary.owner,
-          receiver_namespace: beneficiary.namespace,
-          symbol: beneficiary.symbol,
-          amount: amount,
-        }
-      );;
+      return await this.updateBalance([{ beneficiary, amount: '-' + amount }], {
+        sender_namespace: beneficiary.namespace,
+        sender_account: beneficiary.owner,
+        receiver_namespace: beneficiary.namespace,
+        symbol: beneficiary.symbol,
+        amount: amount,
+      });
     } catch (e) {
       console.error('BURN ERROR: ', e.message);
       await this.rollbackTransaction();
@@ -102,7 +96,7 @@ export class Wallet extends BaseModule {
 
   private async updateBalance(
     values: { beneficiary: Beneficiary; amount: string }[],
-    transaction: Partial<Transaction>,
+    transaction: Partial<Transaction>
   ): Promise<InsertResult> {
     let result;
 

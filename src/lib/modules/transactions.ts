@@ -148,12 +148,14 @@ export class Transactions extends BaseModule {
 
   async getLastExternalByBlockNumber(
     originator: ExternalTransactionOriginator,
-    status: ExternalTransactionStatus
+    status: ExternalTransactionStatus,
+    network_code: NetworkCode
   ) {
     return await this.entityManager.findOne(ExternalTransaction, {
       where: {
         originator,
         status,
+        network_code,
         block_number: Not(IsNull()),
       },
       relations: ['transaction_queue'],
