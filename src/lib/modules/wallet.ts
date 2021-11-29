@@ -7,11 +7,8 @@ import { ModuleException } from './exceptions/module-exception';
 import { Transaction } from '../../db/entities/Transaction';
 
 export class Wallet extends BaseModule {
-  one: bigint;
-
   constructor(entityManager?: EntityManager) {
     super(entityManager);
-    this.one = BigInt(10 ** 18);
   }
 
   async getBalance(userId: string) {
