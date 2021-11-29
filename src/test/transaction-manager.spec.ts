@@ -13,8 +13,8 @@ import { User } from '../db/entities/User';
 import { Transaction } from '../db/entities/Transaction';
 import { TransactionManager } from '../lib/modules';
 
-let entityManager: EntityManager;
 let connection: Connection;
+let entityManager: EntityManager;
 
 const USER_ID = '615bf607f04fbb15aa5dd367';
 const WFAIR = 'WFAIR';
