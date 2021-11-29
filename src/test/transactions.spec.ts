@@ -315,7 +315,8 @@ describe('Test get last external by block number', () => {
 
     const result = await transactions.getLastExternalByBlockNumber(
       ExternalTransactionOriginator.DEPOSIT,
-      ExternalTransactionStatus.COMPLETED
+      ExternalTransactionStatus.COMPLETED,
+      NetworkCode.ETH
     );
 
     expect(result.block_number).toBe(secondTransaction.block_number);
@@ -330,11 +331,13 @@ describe('Test get last external by block number', () => {
       ...externalTransactionModel,
       originator: ExternalTransactionOriginator.DEPOSIT,
       status: ExternalTransactionStatus.COMPLETED,
+      network_code: NetworkCode.ETH,
     });
 
     const result = await transactions.getLastExternalByBlockNumber(
       ExternalTransactionOriginator.DEPOSIT,
-      ExternalTransactionStatus.COMPLETED
+      ExternalTransactionStatus.COMPLETED,
+      NetworkCode.ETH
     );
 
     expect(result).toBeUndefined();
