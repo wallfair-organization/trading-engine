@@ -101,8 +101,8 @@ export class Account extends BaseModule {
       });
 
       return {
-        ...userCreated.raw[0],
-        ...accountCreated.raw[0],
+        ...{ ...userCreated.raw[0], ...userCreated.identifiers[0] },
+        ...{ ...accountCreated.raw[0], ...accountCreated.identifiers[0] },
       };
     } catch (e) {
       console.error('USER CREATION: ', e.message);
