@@ -164,4 +164,16 @@ export class Transactions extends BaseModule {
       },
     });
   }
+
+  async searchExternalTransaction(search: Partial<ExternalTransactionModel>) {
+    return await this.entityManager.find(ExternalTransaction, search);
+  }
+
+  async getExternalTransactionByHash(txHash: string) {
+    return await this.entityManager.findOne(ExternalTransaction, {
+      where: {
+        transaction_hash: txHash,
+      },
+    });
+  }
 }
