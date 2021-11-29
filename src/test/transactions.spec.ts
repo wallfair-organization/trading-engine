@@ -343,3 +343,53 @@ describe('Test get last external by block number', () => {
     expect(result).toBeUndefined();
   });
 });
+
+describe('Test search', () => {
+  test('when search matches the criteria', async () => {
+    await entityManager.delete(ExternalTransaction, {});
+    await entityManager.insert(ExternalTransaction, externalTransactionModel);
+
+    const searchResult = await transactions.searchExternalTransaction({
+      originator: externalTransactionModel.originator,
+    });
+
+    expect(searchResult.length).toBeTruthy();
+  });
+
+  test('when entries not found', async () => {
+    await entityManager.delete(ExternalTransaction, {});
+
+    const searchResult = await transactions.searchExternalTransaction({
+      originator: externalTransactionModel.originator,
+    });
+
+    expect(searchResult.length).toBeFalsy();
+  });
+});
+
+describe('Test find external transaction by hash', () => {
+  const hash = '0xtransactionhash';
+  test('when found', async () => {
+    await entityManager.delete(ExternalTransaction, {});
+    await entityManager.insert(ExternalTransaction, {
+      ...externalTransactionModel,
+      transaction_hash: hash,
+    });
+
+    const externalTransaction = await transactions.getExternalTransactionByHash(
+      hash
+    );
+
+    expect(externalTransaction).toBeTruthy();
+  });
+
+  test('when not found', async () => {
+    await entityManager.delete(ExternalTransaction, {});
+
+    const externalTransaction = await transactions.getExternalTransactionByHash(
+      '0xunknown'
+    );
+
+    expect(externalTransaction).toBeFalsy();
+  });
+});
