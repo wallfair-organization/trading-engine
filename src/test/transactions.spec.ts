@@ -225,14 +225,16 @@ describe('Test get transaction queue by status', () => {
 describe('Test get external transaction by external id', () => {
   test('when found', async () => {
     const stub = await insertExternalTransaction();
-    const result = await transactions.getExternalTransaction(
+    const result = await transactions.getExternalTransactionForUpdate(
       stub.external_transaction_id
     );
     expect(result).not.toBeUndefined();
   });
 
   test('when not found', async () => {
-    const result = await transactions.getExternalTransaction('unknown');
+    const result = await transactions.getExternalTransactionForUpdate(
+      'unknown'
+    );
     expect(result).toBeUndefined();
   });
 });

@@ -71,18 +71,35 @@ describe('Successful transaction', () => {
     await transactionManager.transactions.insertExternalTransaction(
       externalTransaction
     );
+    const extTrans =
+      await transactionManager.transactions.getExternalTransactionForUpdate(
+        externalTransaction.external_transaction_id
+      );
+    await transactionManager.transactions.updateExternalTransaction(
+      extTrans.external_transaction_id,
+      {
+        network_code: NetworkCode.MATIC,
+      }
+    );
 
     await transactionManager.commitTransaction();
 
     const account = await entityManager.findOne(Account, {
       where: { owner_account: USER_ID },
     });
-    const externalTransactionsCount = await entityManager.count(
-      ExternalTransaction
+    const externalTransactionUpdated = await entityManager.findOne(
+      ExternalTransaction,
+      {
+        where: {
+          external_transaction_id: extTrans.external_transaction_id,
+        },
+      }
     );
 
     expect(account.balance).toBe('100');
-    expect(externalTransactionsCount).toBe(1);
+    expect(externalTransactionUpdated.network_code).not.toBe(
+      extTrans.network_code
+    );
   });
 });
 
