@@ -106,10 +106,15 @@ export class Transactions extends BaseModule {
     });
   }
 
-  async getExternalTransaction(external_transaction_id: string) {
-    return await this.entityManager.findOne(ExternalTransaction, {
-      where: { external_transaction_id },
-    });
+  async getExternalTransactionForUpdate(external_transaction_id: string) {
+    return await this.entityManager
+      .createQueryBuilder(ExternalTransaction, 'external_transaction')
+      .useTransaction(!this.entityManager.queryRunner?.isTransactionActive)
+      .setLock('pessimistic_write')
+      .where('external_transaction_id = :external_transaction_id', {
+        external_transaction_id,
+      })
+      .getOne();
   }
 
   async updateExternalTransaction(
