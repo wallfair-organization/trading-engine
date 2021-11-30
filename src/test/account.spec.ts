@@ -187,6 +187,34 @@ describe('Test user creation', () => {
   });
 });
 
+describe('Test get user accounts', () => {
+  test('when user has accounts', async () => {
+    const userId = 'user_with_accounts';
+    await entityManager.save(AccountEntity, {
+      owner_account: 'account_with_users',
+      account_namespace: AccountNamespace.ETH,
+      symbol: WFAIR,
+      balance: '0',
+      users: [
+        {
+          user_id: userId,
+        },
+      ],
+    });
+
+    const result = await account.getUserAccounts(userId);
+    expect(result.length).toBeTruthy();
+  });
+
+  test('when user does not have any accounts', async () => {
+    const userId = 'user_without_accounts';
+    await entityManager.insert(User, { user_id: userId });
+
+    const result = await account.getUserAccounts(userId);
+    expect(result.length).toBeFalsy();
+  });
+});
+
 const insertAccount = async (owner: string) => {
   return await entityManager
     .createQueryBuilder()

@@ -110,4 +110,14 @@ export class Account extends BaseModule {
       throw new ModuleException('User creation failed');
     }
   }
+
+  async getUserAccounts(userId: string) {
+    return await this.entityManager
+      .createQueryBuilder(User, 'user')
+      .innerJoinAndSelect('user.accounts', 'account')
+      .where('user_account.user_id = :userId', {
+        userId,
+      })
+      .getMany();
+  }
 }
