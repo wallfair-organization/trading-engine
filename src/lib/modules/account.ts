@@ -17,6 +17,7 @@ export class Account extends BaseModule {
         where: {
           user_id: userId,
           owner_account: account,
+          account_namespace: AccountNamespace.ETH,
         },
       });
     } catch (e) {
@@ -51,40 +52,21 @@ export class Account extends BaseModule {
   }
 
   async linkEthereumAccount(userId: string, ethAccount: string) {
-    let accountInsert: InsertResult, userAccountInsert: InsertResult;
-
-    await this.runInTransaction(async (em: EntityManager) => {
-      accountInsert = await em
-        .createQueryBuilder()
-        .insert()
-        .into(AccountEntity)
-        .values({
-          owner_account: ethAccount,
-          account_namespace: AccountNamespace.ETH,
-          symbol: 'WFAIR',
-          balance: '0',
-        })
-        .orIgnore()
-        .execute();
-
-      userAccountInsert = await em
-        .createQueryBuilder()
-        .insert()
-        .into(UserAccount)
-        .values({
-          user_id: userId,
-          owner_account: ethAccount,
-          account_namespace: AccountNamespace.ETH,
-        })
-        .onConflict(
-          `("owner_account", "account_namespace") DO UPDATE SET "user_id" = EXCLUDED.user_id`
-        )
-        .execute();
-    });
+    const userAccountInsert = await this.entityManager
+      .createQueryBuilder()
+      .insert()
+      .into(UserAccount)
+      .values({
+        user_id: userId,
+        owner_account: ethAccount,
+        account_namespace: AccountNamespace.ETH,
+      })
+      .onConflict(
+        `("owner_account", "account_namespace") DO UPDATE SET "user_id" = EXCLUDED.user_id`
+      )
+      .execute();
 
     return {
-      ...accountInsert.identifiers[0],
-      ...accountInsert.raw[0],
       ...userAccountInsert.identifiers[0],
       ...userAccountInsert.raw[0],
     };

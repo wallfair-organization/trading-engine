@@ -116,24 +116,6 @@ describe('Test link account', () => {
     expect(userSaved).toBeTruthy();
   });
 
-  test('when account does not exist', async () => {
-    const walletOwner = 'non-existing-account';
-
-    const accountEntity = await findAccount(walletOwner);
-    expect(accountEntity).toBeUndefined();
-
-    const result = await account.linkEthereumAccount(USER_ID, walletOwner);
-
-    const accountAfterLink = await findAccount(walletOwner);
-    const userAccountSaved = await entityManager.findOne(UserAccount, {
-      user_id: result.user_id,
-      owner_account: walletOwner,
-    });
-
-    expect(accountAfterLink).toBeTruthy();
-    expect(userAccountSaved.owner_account).toBe(accountAfterLink.owner_account);
-  });
-
   test('when account is linked to another user', async () => {
     const walletOwner = '0xwalletlinked';
     const userId = '0xuserlinked';
@@ -196,9 +178,16 @@ describe('Test link account', () => {
       account_namespace: AccountNamespace.ETH,
     });
 
-    await expect(
-      account.linkEthereumAccount(userId, walletOwner)
-    ).resolves.not.toThrow(ModuleException);
+    const result = await account.linkEthereumAccount(userId, walletOwner);
+
+    const userAccount = await entityManager.findOne(UserAccount, {
+      where: { user_id: userId, owner_account: walletOwner },
+    });
+
+    expect(userAccount.user_id).toBe(userId);
+    expect(userAccount.owner_account).toBe(walletOwner);
+    expect(result.user_id).toBe(userId);
+    expect(result.owner_account).toBe(walletOwner);
   });
 });
 
