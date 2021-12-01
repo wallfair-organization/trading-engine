@@ -247,6 +247,16 @@ describe('Test get user accounts', () => {
   });
 });
 
+describe('Test get user link', () => {
+  test('when exists', async () => {
+    expect(await account.getUserLink(WALLET_ACCOUNT)).toBeTruthy();
+  });
+
+  test('when does not exist', async () => {
+    expect(await account.getUserLink('0xuknown')).toBeUndefined();
+  });
+});
+
 const insertAccount = async (owner: string) => {
   return await entityManager
     .createQueryBuilder()
