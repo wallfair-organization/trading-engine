@@ -7,7 +7,10 @@ const config: ConnectionOptions = {
   username: process.env.POSTGRES_USER,
   password: process.env.POSTGRES_PASSWORD,
   database: process.env.POSTGRES_DB,
-  ssl: process.env.POSTGRES_DISABLE_SSL !== 'true',
+  ssl:
+    process.env.POSTGRES_DISABLE_SSL === 'true'
+      ? false
+      : { rejectUnauthorized: false },
 
   migrationsRun: true,
   logging: process.env.DB_QUERY_LOGGING === 'true',
