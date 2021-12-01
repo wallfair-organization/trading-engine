@@ -103,7 +103,8 @@ export class Account extends BaseModule {
       );
 
       return {
-        ...{ ...userCreated.raw[0], ...userCreated.identifiers[0] },
+        ...userCreated.raw[0],
+        ...userCreated.identifiers[0],
       };
     } catch (e) {
       console.error('USER CREATION: ', e.message);
@@ -116,6 +117,14 @@ export class Account extends BaseModule {
     return await this.entityManager.find(UserAccount, {
       where: {
         user_id: userId,
+      },
+    });
+  }
+
+  async getUserLink(ethAccount: string) {
+    return await this.entityManager.findOne(UserAccount, {
+      where: {
+        owner_account: ethAccount,
       },
     });
   }
