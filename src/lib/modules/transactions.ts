@@ -1,4 +1,4 @@
-import { EntityManager, In, IsNull, Not } from 'typeorm';
+import { EntityManager, FindConditions, In, IsNull, Not } from 'typeorm';
 import { ExternalTransaction } from '../../db/entities/ExternalTransaction';
 import {
   ExternalTransaction as ExternalTransactionModel,
@@ -149,6 +149,15 @@ export class Transactions extends BaseModule {
       await this.rollbackTransaction();
       throw new ModuleException(e.message);
     }
+  }
+
+  async getExternalTransactionLogs(
+    externalTransactionLogConditions: FindConditions<ExternalTransactionLogModel>
+  ) {
+    return await this.entityManager.find(
+      ExternalTransactionLog,
+      externalTransactionLogConditions
+    );
   }
 
   async getLastExternalByBlockNumber(

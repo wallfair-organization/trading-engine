@@ -16,6 +16,7 @@ import {
 import { ModuleException } from '../lib/modules/exceptions/module-exception';
 import { ExternalTransaction } from '../db/entities/ExternalTransaction';
 import { TransactionQueue } from '../db/entities/TransactionQueue';
+import { ExternalTransactionLog } from '../db/entities/ExternalTransactionLog';
 
 let entityManager: EntityManager;
 let connection: Connection;
@@ -284,6 +285,22 @@ describe('Test insert external transaction log', () => {
         status: null,
       })
     ).rejects.toThrow(ModuleException);
+  });
+});
+
+describe('Test find external transaction log', () => {
+  test('when it is successful', async () => {
+    const sender = '0xsomeuser';
+
+    await entityManager.save(ExternalTransactionLog, {
+      ...externalTransactionModel,
+      sender,
+    });
+
+    const transactionLogs = await transactions.getExternalTransactionLogs({
+      sender,
+    });
+    expect(transactionLogs.length).toBe(1);
   });
 });
 
