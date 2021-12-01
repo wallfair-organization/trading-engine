@@ -1,10 +1,10 @@
-import { User } from '../../db/entities/User';
 import { Account as AccountEntity } from '../../db/entities/Account';
 import { EntityManager, InsertResult } from 'typeorm';
 import { BaseModule } from './base-module';
 import { ModuleException } from './exceptions/module-exception';
 import { AccountNamespace } from '../models/enums/AccountNamespace';
 import { Beneficiary } from '../models';
+import { UserAccount } from '../../db/entities/UserAccount';
 
 export class Account extends BaseModule {
   constructor(entityManager?: EntityManager) {
@@ -13,17 +13,12 @@ export class Account extends BaseModule {
 
   async isUserOwner(userId: string, account: string) {
     try {
-      return await this.entityManager
-        .createQueryBuilder(User, 'user')
-        .innerJoinAndSelect('user.accounts', 'account')
-        .where(
-          'user_account.owner_account = :account AND user_account.user_id = :userId',
-          {
-            account,
-            userId,
-          }
-        )
-        .getOneOrFail();
+      return await this.entityManager.findOneOrFail(UserAccount, {
+        where: {
+          user_id: userId,
+          owner_account: account,
+        },
+      });
     } catch (e) {
       console.error('IS USER OWNER CHECK ERROR: ', e.message);
       await this.rollbackTransaction();
@@ -38,7 +33,6 @@ export class Account extends BaseModule {
         account_namespace: AccountNamespace.ETH,
         symbol: 'WFAIR',
       },
-      relations: ['users'],
     });
   }
 
@@ -57,52 +51,59 @@ export class Account extends BaseModule {
   }
 
   async linkEthereumAccount(userId: string, ethAccount: string) {
-    const account = await this.findAccount(ethAccount);
-    const params = {
-      owner_account: ethAccount,
-      account_namespace: AccountNamespace.ETH,
-      symbol: 'WFAIR',
-      users: [
-        {
+    let accountInsert: InsertResult, userAccountInsert: InsertResult;
+
+    await this.runInTransaction(async (em: EntityManager) => {
+      accountInsert = await em
+        .createQueryBuilder()
+        .insert()
+        .into(AccountEntity)
+        .values({
+          owner_account: ethAccount,
+          account_namespace: AccountNamespace.ETH,
+          symbol: 'WFAIR',
+          balance: '0',
+        })
+        .orIgnore()
+        .execute();
+
+      userAccountInsert = await em
+        .createQueryBuilder()
+        .insert()
+        .into(UserAccount)
+        .values({
           user_id: userId,
-        },
-      ],
+          owner_account: ethAccount,
+          account_namespace: AccountNamespace.ETH,
+        })
+        .onConflict(
+          `("owner_account", "account_namespace") DO UPDATE SET "user_id" = EXCLUDED.user_id`
+        )
+        .execute();
+    });
+
+    return {
+      ...accountInsert.identifiers[0],
+      ...accountInsert.raw[0],
+      ...userAccountInsert.identifiers[0],
+      ...userAccountInsert.raw[0],
     };
-
-    if (!account) {
-      params['balance'] = '0';
-    }
-
-    const result = await this.entityManager.save(AccountEntity, params);
-    return { ...account, ...result };
   }
 
   async createUser(userId: string) {
     try {
-      const account = {
-        owner_account: userId,
-        account_namespace: AccountNamespace.USR,
-        symbol: 'WFAIR',
-      };
-
-      let userCreated: InsertResult, accountCreated: InsertResult;
-
-      await this.runInTransaction(async (em: EntityManager) => {
-        userCreated = await em.insert(User, { user_id: userId });
-        accountCreated = await em.insert(AccountEntity, {
-          ...account,
+      const userCreated: InsertResult = await this.entityManager.insert(
+        AccountEntity,
+        {
+          owner_account: userId,
+          account_namespace: AccountNamespace.USR,
+          symbol: 'WFAIR',
           balance: '0',
-        });
-        await em
-          .createQueryBuilder()
-          .relation(User, 'accounts')
-          .of(userId)
-          .add(account);
-      });
+        }
+      );
 
       return {
         ...{ ...userCreated.raw[0], ...userCreated.identifiers[0] },
-        ...{ ...accountCreated.raw[0], ...accountCreated.identifiers[0] },
       };
     } catch (e) {
       console.error('USER CREATION: ', e.message);
@@ -112,12 +113,10 @@ export class Account extends BaseModule {
   }
 
   async getUserAccounts(userId: string) {
-    return await this.entityManager
-      .createQueryBuilder(User, 'user')
-      .innerJoinAndSelect('user.accounts', 'account')
-      .where('user_account.user_id = :userId', {
-        userId,
-      })
-      .getMany();
+    return await this.entityManager.find(UserAccount, {
+      where: {
+        user_id: userId,
+      },
+    });
   }
 }
