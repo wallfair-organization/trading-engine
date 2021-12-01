@@ -1,7 +1,6 @@
 import { Connection, createConnection, EntityManager, IsNull } from 'typeorm';
 import config from './config/db-config';
 import dotenv from 'dotenv';
-import { User } from '../db/entities/User';
 import { Account } from '../db/entities/Account';
 import { AccountNamespace } from '../lib/models';
 import { Wallet } from '../lib/modules';
@@ -73,11 +72,6 @@ beforeEach(async () => {
   account.symbol = WFAIR;
   account.balance = '0';
   await entityManager.save(account);
-
-  const user = new User();
-  user.user_id = USER_ID;
-  user.accounts = [account];
-  await entityManager.save(user);
 });
 
 describe('Test balance', () => {
@@ -93,7 +87,7 @@ describe('Test balance', () => {
   });
 
   test('when account does not exist', async () => {
-    await expect(wallet.getBalance('unknown')).rejects.toThrow(ModuleException);
+    expect(await wallet.getBalance('unknown')).toBe('0');
   });
 });
 

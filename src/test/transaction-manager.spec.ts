@@ -8,7 +8,6 @@ import {
   TransactionManager,
 } from '..';
 import { Account } from '../db/entities/Account';
-import { User } from '../db/entities/User';
 import { Transaction } from '../db/entities/Transaction';
 import { ExternalTransaction } from '../db/entities/ExternalTransaction';
 import { ModuleException } from '../lib/modules/exceptions/module-exception';
@@ -49,11 +48,6 @@ beforeEach(async () => {
   account.symbol = WFAIR;
   account.balance = '0';
   await entityManager.save(account);
-
-  const user = new User();
-  user.user_id = USER_ID;
-  user.accounts = [account];
-  await entityManager.save(user);
 });
 
 afterEach(async () => {

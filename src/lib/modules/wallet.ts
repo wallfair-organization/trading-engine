@@ -1,10 +1,10 @@
 import { EntityManager, InsertResult } from 'typeorm';
-import { User } from '../../db/entities/User';
 import { Account } from '../../db/entities/Account';
 import { Beneficiary } from '../models/beneficiary';
 import { BaseModule } from './base-module';
 import { ModuleException } from './exceptions/module-exception';
 import { Transaction } from '../../db/entities/Transaction';
+import { AccountNamespace } from '../models';
 
 export class Wallet extends BaseModule {
   constructor(entityManager?: EntityManager) {
@@ -12,23 +12,13 @@ export class Wallet extends BaseModule {
   }
 
   async getBalance(userId: string) {
-    try {
-      const user = await this.entityManager
-        .createQueryBuilder(User, 'user')
-        .innerJoinAndSelect('user.accounts', 'account')
-        .where(
-          'user_account.owner_account = :userId AND user_account.user_id = :userId',
-          {
-            userId,
-          }
-        )
-        .getOneOrFail();
-      return user.accounts[0].balance;
-    } catch (e) {
-      console.error('GET BALANCE ERROR: ', e.message);
-      await this.rollbackTransaction();
-      throw new ModuleException('Failed to fetch balance');
-    }
+    const user = await this.entityManager.findOne(Account, {
+      where: {
+        owner_account: userId,
+        account_namespace: AccountNamespace.USR,
+      },
+    });
+    return user?.balance || '0';
   }
 
   async mint(beneficiary: Beneficiary, amount: string) {

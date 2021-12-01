@@ -1,5 +1,4 @@
-import { Column, Entity, ManyToMany, PrimaryColumn } from 'typeorm';
-import { User } from './User';
+import { Column, Entity, PrimaryColumn } from 'typeorm';
 
 @Entity()
 export class Account {
@@ -14,9 +13,4 @@ export class Account {
 
   @Column({ type: 'decimal', nullable: false })
   balance: string;
-
-  @ManyToMany(() => User, (user) => user.accounts, {
-    cascade: ['insert'],
-  })
-  users: User[];
 }
