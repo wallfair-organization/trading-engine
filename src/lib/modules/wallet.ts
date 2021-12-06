@@ -11,11 +11,11 @@ export class Wallet extends BaseModule {
     super(entityManager);
   }
 
-  async getBalance(userId: string) {
+  async getBalance(owner: string, namespace = AccountNamespace.USR) {
     const user = await this.entityManager.findOne(Account, {
       where: {
-        owner_account: userId,
-        account_namespace: AccountNamespace.USR,
+        owner_account: owner,
+        account_namespace: namespace,
       },
     });
     return user?.balance || '0';
