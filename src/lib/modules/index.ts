@@ -2,6 +2,7 @@ import { Account } from './account';
 import { Wallet } from './wallet';
 import { Transactions } from './transactions';
 import { TransactionManager } from './transaction-manager';
+import { Query } from './query';
 import { EntityManager, getConnection } from 'typeorm';
 
 const getEntityManager = (transactional: boolean): EntityManager => {
@@ -17,4 +18,11 @@ const getEntityManager = (transactional: boolean): EntityManager => {
   }
 };
 
-export { Account, TransactionManager, Wallet, Transactions, getEntityManager };
+export {
+  Account,
+  TransactionManager,
+  Wallet,
+  Transactions,
+  Query,
+  getEntityManager,
+};

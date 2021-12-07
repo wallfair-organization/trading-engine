@@ -1,5 +1,6 @@
 import { EntityManager } from 'typeorm';
 import { Account, getEntityManager } from '.';
+import { Query } from './query';
 import { Transactions } from './transactions';
 import { Wallet } from './wallet';
 
@@ -7,6 +8,7 @@ export class TransactionManager {
   wallet: Wallet;
   transactions: Transactions;
   account: Account;
+  queryRunner: Query;
   private readonly entityManager: EntityManager;
 
   constructor() {
@@ -15,6 +17,7 @@ export class TransactionManager {
     this.wallet = new Wallet(em);
     this.transactions = new Transactions(em);
     this.account = new Account(em);
+    this.queryRunner = new Query(em);
   }
 
   async startTransaction() {

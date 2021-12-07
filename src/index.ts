@@ -20,4 +20,5 @@ export {
   Wallet,
   Transactions,
   TransactionManager,
+  Query,
 } from './lib/modules';
