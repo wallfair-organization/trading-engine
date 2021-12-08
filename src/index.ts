@@ -1,12 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
-
 import 'reflect-metadata';
 
-import { BigNumber } from 'bignumber.js';
-BigNumber.set({ DECIMAL_PLACES: 18 });
-
-export { BigNumber as BN };
 export * from './lib/main';
 export {
   Beneficiary,
