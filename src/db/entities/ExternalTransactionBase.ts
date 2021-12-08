@@ -52,5 +52,6 @@ export abstract class ExternalTransactionBase {
     this.external_system = attributes.external_system;
     this.status = attributes.status;
     this.external_transaction_id = attributes.external_transaction_id;
+    this.network_code = attributes.network_code;
   }
 }
