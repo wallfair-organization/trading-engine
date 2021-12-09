@@ -387,8 +387,8 @@ describe('Test search', () => {
 });
 
 describe('Test find external transaction by hash', () => {
-  const hash = '0xtransactionhash';
   test('when found', async () => {
+    const hash = '0xtransactionhash';
     await entityManager.delete(ExternalTransaction, {});
     await entityManager.insert(ExternalTransaction, {
       ...externalTransactionModel,
@@ -414,8 +414,8 @@ describe('Test find external transaction by hash', () => {
 });
 
 describe('Test find external transaction log by hash', () => {
-  const hash = '0xtransactionhash';
   test('when found', async () => {
+    const hash = '0xtransactionhash';
     await entityManager.delete(ExternalTransactionLog, {});
     await entityManager.insert(ExternalTransactionLog, {
       ...externalTransactionModel,
@@ -426,6 +426,34 @@ describe('Test find external transaction log by hash', () => {
       await transactions.getExternalTransactionLogByHash(hash);
 
     expect(externalTransaction).toBeTruthy();
+  });
+
+  test('when two exist takes the last one', async () => {
+    const hash = '0xtransactionhash1';
+    const date = new Date();
+    await entityManager.delete(ExternalTransactionLog, {});
+    await entityManager.insert(ExternalTransactionLog, {
+      ...externalTransactionModel,
+      id: '03c03406-0d77-46f4-bc80-2610c3b7f9bf',
+      created_at: date,
+      status: ExternalTransactionStatus.NEW,
+      transaction_hash: hash,
+    });
+    await entityManager.insert(ExternalTransactionLog, {
+      ...externalTransactionModel,
+      id: '2b5499a2-13d1-4569-b940-9a4a3fedc8e0',
+      created_at: new Date(date.getTime() + 1),
+      status: ExternalTransactionStatus.COMPLETED,
+      transaction_hash: hash,
+    });
+
+    const externalTransaction =
+      await transactions.getExternalTransactionLogByHash(hash);
+
+    expect(externalTransaction).toBeTruthy();
+    expect(externalTransaction.status).toBe(
+      ExternalTransactionStatus.COMPLETED
+    );
   });
 
   test('when not found', async () => {

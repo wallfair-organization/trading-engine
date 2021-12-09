@@ -196,6 +196,9 @@ export class Transactions extends BaseModule {
       where: {
         transaction_hash: txHash,
       },
+      order: {
+        created_at: TransactionOrder.DESC,
+      },
     });
   }
 }
