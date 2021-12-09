@@ -15,6 +15,7 @@ export interface ExternalTransactionLog {
   sender?: string;
   receiver?: string;
   amount?: string;
+  fee?: string;
   fiat_currency?: string;
   fiat_amount?: string;
 }

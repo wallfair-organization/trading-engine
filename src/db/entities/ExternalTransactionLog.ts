@@ -16,6 +16,9 @@ export class ExternalTransactionLog extends ExternalTransactionBase {
   amount: string;
 
   @Column({ type: 'decimal', nullable: true })
+  fee: string;
+
+  @Column({ type: 'decimal', nullable: true })
   fiat_amount: string;
 
   @Column({ nullable: true })
