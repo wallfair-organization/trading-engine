@@ -413,7 +413,7 @@ describe('Test find external transaction by hash', () => {
   });
 });
 
-describe('Test find external transaction by hash', () => {
+describe('Test find external transaction log by hash', () => {
   const hash = '0xtransactionhash';
   test('when found', async () => {
     await entityManager.delete(ExternalTransactionLog, {});
