@@ -412,3 +412,28 @@ describe('Test find external transaction by hash', () => {
     expect(externalTransaction).toBeFalsy();
   });
 });
+
+describe('Test find external transaction by hash', () => {
+  const hash = '0xtransactionhash';
+  test('when found', async () => {
+    await entityManager.delete(ExternalTransactionLog, {});
+    await entityManager.insert(ExternalTransactionLog, {
+      ...externalTransactionModel,
+      transaction_hash: hash,
+    });
+
+    const externalTransaction =
+      await transactions.getExternalTransactionLogByHash(hash);
+
+    expect(externalTransaction).toBeTruthy();
+  });
+
+  test('when not found', async () => {
+    await entityManager.delete(ExternalTransactionLog, {});
+
+    const externalTransaction =
+      await transactions.getExternalTransactionLogByHash('0xunknown');
+
+    expect(externalTransaction).toBeFalsy();
+  });
+});
