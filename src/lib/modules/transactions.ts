@@ -190,4 +190,12 @@ export class Transactions extends BaseModule {
       },
     });
   }
+
+  async getExternalTransactionLogByHash(txHash: string) {
+    return await this.entityManager.findOne(ExternalTransactionLog, {
+      where: {
+        transaction_hash: txHash,
+      },
+    });
+  }
 }
