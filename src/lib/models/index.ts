@@ -7,6 +7,7 @@ import { ExternalTransactionOriginator } from './enums/ExternalTransactionOrigin
 import { ExternalTransactionStatus } from './enums/ExternalTransactionStatus';
 import { NetworkCode } from './enums/NetworkCode';
 import { TransactionOrder } from './enums/TransactionOrder';
+import { WebhookQueueStatus } from './enums/WebhookQueueStatus';
 
 export {
   Beneficiary,
@@ -18,4 +19,5 @@ export {
   ExternalTransactionStatus,
   NetworkCode,
   TransactionOrder,
+  WebhookQueueStatus,
 };

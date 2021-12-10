@@ -29,15 +29,47 @@ describe('Test webhook queue insertion', () => {
   test('when successful', async () => {
     const result = await webhook.insertWebhookQueue(
       JSON.stringify(object),
+      'request_id',
+      'order_successful',
       'Error'
     );
 
     expect(result.raw.length).toBeTruthy();
   });
 
+  test('when already exists', async () => {
+    const wq = await enttityManager.insert(WebhookQueue, {
+      request: JSON.stringify({ test: 'list' }),
+      request_id: 'request_id',
+      request_status: 'existing',
+      status: WebhookQueueStatus.FAILED,
+      error: 'Something failed',
+    });
+
+    const result = await webhook.insertWebhookQueue(
+      JSON.stringify(object),
+      'request_id',
+      'existing',
+      'Different error'
+    );
+
+    const afterUpsert = await enttityManager.findOne(
+      WebhookQueue,
+      wq.raw[0].id
+    );
+
+    expect(afterUpsert.error).toBe(result.raw[0].error);
+    expect(afterUpsert.attempts).toBe(wq.raw[0].attempts + 1);
+  });
+
   test('when it fails', async () => {
     await expect(
-      webhook.insertWebhookQueue(undefined, 'Error')
+      webhook.insertWebhookQueue(
+        undefined,
+        'request_id',
+        'order_successful',
+        'Error'
+      )
     ).rejects.toThrow(ModuleException);
   });
 });
@@ -46,6 +78,8 @@ describe('Test fetching webhook queue by status', () => {
   test('when records are found', async () => {
     await enttityManager.save(WebhookQueue, {
       request: JSON.stringify({ test: 'list' }),
+      request_id: 'request_id',
+      request_status: 'fetching',
       status: WebhookQueueStatus.FAILED,
       error: 'Something failed',
     });
@@ -68,6 +102,8 @@ describe('Test webhook queue update', () => {
   test('when successful', async () => {
     const webhookQueue = await enttityManager.save(WebhookQueue, {
       request: JSON.stringify({ test: 'update' }),
+      request_id: 'request_id',
+      request_status: 'updating',
       status: WebhookQueueStatus.FAILED,
       error: 'Something failed',
     });

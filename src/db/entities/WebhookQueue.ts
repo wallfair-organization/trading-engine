@@ -3,10 +3,12 @@ import {
   CreateDateColumn,
   Entity,
   PrimaryGeneratedColumn,
+  Unique,
   UpdateDateColumn,
 } from 'typeorm';
 
 @Entity()
+@Unique('request_id_status', ['request_id', 'request_status'])
 export class WebhookQueue {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -23,6 +25,15 @@ export class WebhookQueue {
 
   @Column()
   error: string;
+
+  @Column()
+  request_id: string;
+
+  @Column()
+  request_status: string;
+
+  @Column({ default: 1 })
+  attempts: number;
 
   @CreateDateColumn({ type: 'timestamp with time zone' })
   created_at: Date;

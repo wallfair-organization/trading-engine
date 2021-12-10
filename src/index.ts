@@ -13,6 +13,7 @@ export {
   ExternalTransactionStatus,
   NetworkCode,
   TransactionOrder,
+  WebhookQueueStatus,
 } from './lib/models';
 export {
   Account,
