@@ -9,7 +9,12 @@ export class Webhook extends BaseModule {
     super(entityManager);
   }
 
-  async insertWebhookQueue(request: string, error: string) {
+  async insertWebhookQueue(
+    request: string,
+    request_id: string,
+    request_status: string,
+    error: string
+  ) {
     try {
       return await this.entityManager
         .createQueryBuilder()
@@ -17,10 +22,14 @@ export class Webhook extends BaseModule {
         .into(WebhookQueue)
         .values({
           request,
+          request_id,
+          request_status,
           error,
           status: WebhookQueueStatus.FAILED,
         })
-        .updateEntity(false)
+        .onConflict(
+          `("request_id", "request_status") DO UPDATE SET error = EXCLUDED.error, attempts = webhook_queue.attempts + 1`
+        )
         .returning('*')
         .execute();
     } catch (e) {
