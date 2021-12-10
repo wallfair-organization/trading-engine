@@ -106,7 +106,8 @@
     "coveragePathIgnorePatterns": [
       "src/index.ts",
       "src/lib/main.ts",
-      "src/db/migrations"
+      "src/db/migrations",
+      "src/db/config"
     ],
     "globals": {
       "ts-jest": {
