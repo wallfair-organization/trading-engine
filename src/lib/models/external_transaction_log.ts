@@ -18,4 +18,5 @@ export interface ExternalTransactionLog {
   fee?: string;
   fiat_currency?: string;
   fiat_amount?: string;
+  internal_user_id?: string;
 }
