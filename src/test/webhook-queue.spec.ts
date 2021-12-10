@@ -63,3 +63,29 @@ describe('Test fetching webhook queue by status', () => {
     expect(result.length).toBeFalsy();
   });
 });
+
+describe('Test webhook queue update', () => {
+  test('when successful', async () => {
+    const webhookQueue = await enttityManager.save(WebhookQueue, {
+      request: JSON.stringify({ test: 'update' }),
+      status: WebhookQueueStatus.FAILED,
+      error: 'Something failed',
+    });
+
+    await webhook.updateStatus(webhookQueue.id, WebhookQueueStatus.RESOLVED);
+
+    const afterUpdate = await enttityManager.findOne(
+      WebhookQueue,
+      webhookQueue.id
+    );
+
+    expect(afterUpdate.status).toBe(WebhookQueueStatus.RESOLVED);
+    expect(afterUpdate.status).not.toBe(webhookQueue.status);
+  });
+
+  test('when it fails', async () => {
+    await expect(
+      webhook.updateStatus('uknown', WebhookQueueStatus.RESOLVED)
+    ).rejects.toThrow(ModuleException);
+  });
+});
