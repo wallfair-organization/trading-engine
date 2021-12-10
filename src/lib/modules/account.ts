@@ -12,19 +12,14 @@ export class Account extends BaseModule {
   }
 
   async isUserOwner(userId: string, account: string) {
-    try {
-      return await this.entityManager.findOneOrFail(UserAccount, {
-        where: {
-          user_id: userId,
-          owner_account: account,
-          account_namespace: AccountNamespace.ETH,
-        },
-      });
-    } catch (e) {
-      console.error('IS USER OWNER CHECK ERROR: ', e.message);
-      await this.rollbackTransaction();
-      throw new ModuleException('Ethereum address not mapped to the user');
-    }
+    const userAccount = await this.entityManager.findOne(UserAccount, {
+      where: {
+        user_id: userId,
+        owner_account: account,
+        account_namespace: AccountNamespace.ETH,
+      },
+    });
+    return !!userAccount;
   }
 
   async findAccount(ethAccount: string) {

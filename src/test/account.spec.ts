@@ -44,14 +44,12 @@ beforeEach(async () => {
 describe('Test if user owns an account', () => {
   test('when true', async () => {
     const result = await account.isUserOwner(USER_ID, WALLET_ACCOUNT);
-    expect(result.user_id).toBe(USER_ID);
-    expect(result.owner_account).toBe(WALLET_ACCOUNT);
+    expect(result).toBe(true);
   });
 
   test('when user does not own an account', async () => {
-    await expect(account.isUserOwner(USER_ID, '0xunknown')).rejects.toThrow(
-      ModuleException
-    );
+    const result = await account.isUserOwner(USER_ID, '0xunknown');
+    expect(result).toBe(false);
   });
 });
 
