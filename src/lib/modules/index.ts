@@ -3,6 +3,7 @@ import { Wallet } from './wallet';
 import { Transactions } from './transactions';
 import { TransactionManager } from './transaction-manager';
 import { Query } from './query';
+import { Webhook } from './webhook';
 import { EntityManager, getConnection } from 'typeorm';
 
 const getEntityManager = (transactional: boolean): EntityManager => {
@@ -24,5 +25,6 @@ export {
   Wallet,
   Transactions,
   Query,
+  Webhook,
   getEntityManager,
 };

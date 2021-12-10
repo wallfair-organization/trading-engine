@@ -20,4 +20,5 @@ export {
   Transactions,
   TransactionManager,
   Query,
+  Webhook,
 } from './lib/modules';

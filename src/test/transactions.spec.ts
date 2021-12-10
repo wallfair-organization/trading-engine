@@ -59,7 +59,6 @@ const insertExternalTransaction = async (
 beforeAll(async () => {
   connection = await createConnection(config);
   entityManager = new EntityManager(connection, connection.createQueryRunner());
-  console.log(entityManager.queryRunner?.isTransactionActive);
   transactions = new Transactions();
 });
 
