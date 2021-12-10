@@ -37,4 +37,22 @@ export class Webhook extends BaseModule {
       },
     });
   }
+
+  async updateStatus(id: string, status: WebhookQueueStatus) {
+    try {
+      return await this.entityManager.update(
+        WebhookQueue,
+        {
+          id,
+        },
+        {
+          status,
+        }
+      );
+    } catch (e) {
+      console.error('ERROR: ', e.message);
+      this.rollbackTransaction();
+      throw new ModuleException(`Failed to update webhook queue with id ${id}`);
+    }
+  }
 }
