@@ -23,10 +23,14 @@ export class Transactions extends BaseModule {
     externalTransaction: ExternalTransactionModel
   ) {
     try {
-      return await this.entityManager.insert(
-        ExternalTransaction,
-        externalTransaction
-      );
+      return await this.entityManager
+        .createQueryBuilder()
+        .insert()
+        .into(ExternalTransaction)
+        .values(externalTransaction)
+        .updateEntity(false)
+        .returning('*')
+        .execute();
     } catch (e) {
       console.error('ERROR: ', e.message);
       await this.rollbackTransaction();
@@ -140,10 +144,14 @@ export class Transactions extends BaseModule {
     externalTransactionLog: ExternalTransactionLogModel
   ) {
     try {
-      return await this.entityManager.insert(
-        ExternalTransactionLog,
-        externalTransactionLog
-      );
+      return await this.entityManager
+        .createQueryBuilder()
+        .insert()
+        .into(ExternalTransactionLog)
+        .values(externalTransactionLog)
+        .updateEntity(false)
+        .returning('*')
+        .execute();
     } catch (e) {
       console.error('ERROR: ', e.message);
       await this.rollbackTransaction();

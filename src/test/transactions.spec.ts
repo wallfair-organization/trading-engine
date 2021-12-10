@@ -79,7 +79,7 @@ describe('Test insert external transaction', () => {
       network_code: NetworkCode.ETH,
     });
 
-    expect(result.identifiers.length).toBeTruthy();
+    expect(result.raw[0].id).toBeTruthy();
   });
 
   test('when it fails', async () => {
@@ -275,7 +275,7 @@ describe('Test insert external transaction log', () => {
     const result = await transactions.insertExternalTransactionLog(
       externalTransactionModel
     );
-    expect(result.identifiers.length).toBeTruthy();
+    expect(result.raw[0].id).toBeTruthy();
   });
 
   test('when it fails', async () => {
