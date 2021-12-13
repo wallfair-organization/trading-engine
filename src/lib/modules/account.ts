@@ -5,6 +5,7 @@ import { ModuleException } from './exceptions/module-exception';
 import { AccountNamespace } from '../models/enums/AccountNamespace';
 import { Beneficiary } from '../models';
 import { UserAccount } from '../../db/entities/UserAccount';
+import { WFAIR_SYMBOL } from '../main';
 
 export class Account extends BaseModule {
   constructor(entityManager?: EntityManager) {
@@ -27,7 +28,7 @@ export class Account extends BaseModule {
       where: {
         owner_account: ethAccount,
         account_namespace: AccountNamespace.ETH,
-        symbol: 'WFAIR',
+        symbol: WFAIR_SYMBOL,
       },
     });
   }
@@ -74,7 +75,7 @@ export class Account extends BaseModule {
         {
           owner_account: userId,
           account_namespace: AccountNamespace.USR,
-          symbol: 'WFAIR',
+          symbol: WFAIR_SYMBOL,
           balance: '0',
         }
       );

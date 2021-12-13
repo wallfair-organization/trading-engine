@@ -6,6 +6,7 @@ import {
   ExternalTransactionStatus,
   NetworkCode,
   TransactionManager,
+  WFAIR_SYMBOL,
 } from '..';
 import { Account } from '../db/entities/Account';
 import { Transaction } from '../db/entities/Transaction';
@@ -16,11 +17,10 @@ let connection: Connection;
 let entityManager: EntityManager;
 
 const USER_ID = '615bf607f04fbb15aa5dd367';
-const WFAIR = 'WFAIR';
 const beneficiary = {
   owner: USER_ID,
   namespace: AccountNamespace.USR,
-  symbol: WFAIR,
+  symbol: WFAIR_SYMBOL,
 };
 const externalTransaction = {
   originator: ExternalTransactionOriginator.DEPOSIT,
@@ -45,7 +45,7 @@ beforeEach(async () => {
   const account = new Account();
   account.owner_account = USER_ID;
   account.account_namespace = AccountNamespace.USR;
-  account.symbol = WFAIR;
+  account.symbol = WFAIR_SYMBOL;
   account.balance = '0';
   await entityManager.save(account);
 });

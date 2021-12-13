@@ -7,26 +7,26 @@ import { Wallet } from '../lib/modules';
 import { ModuleException } from '../lib/modules/exceptions/module-exception';
 import BigNumber from 'bignumber.js';
 import { Transaction } from '../db/entities/Transaction';
+import { WFAIR_SYMBOL } from '..';
 
 dotenv.config();
 jest.setTimeout(1000000);
 
 const USER_ID = '615bf607f04fbb15aa5dd367';
-const WFAIR = 'WFAIR';
 const beneficiary = {
   owner: USER_ID,
   namespace: AccountNamespace.USR,
-  symbol: WFAIR,
+  symbol: WFAIR_SYMBOL,
 };
 const sender = {
   owner: 'sender',
   namespace: AccountNamespace.USR,
-  symbol: WFAIR,
+  symbol: WFAIR_SYMBOL,
 };
 const receiver = {
   owner: 'receiver',
   namespace: AccountNamespace.USR,
-  symbol: WFAIR,
+  symbol: WFAIR_SYMBOL,
 };
 
 let entityManager: EntityManager;
@@ -69,7 +69,7 @@ beforeEach(async () => {
   const account = new Account();
   account.owner_account = USER_ID;
   account.account_namespace = AccountNamespace.USR;
-  account.symbol = WFAIR;
+  account.symbol = WFAIR_SYMBOL;
   account.balance = '0';
   await entityManager.save(account);
 });
@@ -139,7 +139,7 @@ describe('Test mint', () => {
       {
         owner,
         namespace: AccountNamespace.ETH,
-        symbol: WFAIR,
+        symbol: WFAIR_SYMBOL,
       },
       amount.toString()
     );
@@ -161,7 +161,7 @@ describe('Test burn', () => {
     const updated = await entityManager.save(Account, {
       owner_account: USER_ID,
       account_namespace: AccountNamespace.USR,
-      symbol: WFAIR,
+      symbol: WFAIR_SYMBOL,
       balance: amount.toString(),
     });
     const oldBalance = updated.balance;
@@ -204,7 +204,7 @@ describe('Test burn', () => {
     const account = await entityManager.save(Account, {
       owner_account: USER_ID,
       account_namespace: AccountNamespace.USR,
-      symbol: WFAIR,
+      symbol: WFAIR_SYMBOL,
       balance: '20',
     });
 
