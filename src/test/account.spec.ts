@@ -5,6 +5,7 @@ import { Account as AccountEntity } from '../db/entities/Account';
 import { AccountNamespace } from '../lib/models';
 import { ModuleException } from '../lib/modules/exceptions/module-exception';
 import { UserAccount } from '../db/entities/UserAccount';
+import { WFAIR_SYMBOL } from '../lib/main';
 
 let entityManager: EntityManager;
 let connection: Connection;
@@ -12,7 +13,6 @@ let account: Account;
 
 const USER_ID = '615bf607f04fbb15aa5dd367';
 const WALLET_ACCOUNT = '0xtestwallet';
-const WFAIR = 'WFAIR';
 
 beforeAll(async () => {
   connection = await createConnection(config);
@@ -30,7 +30,7 @@ beforeEach(async () => {
   await entityManager.save(AccountEntity, {
     owner_account: WALLET_ACCOUNT,
     account_namespace: AccountNamespace.ETH,
-    symbol: WFAIR,
+    symbol: WFAIR_SYMBOL,
     balance: '0',
   });
 
@@ -71,7 +71,7 @@ describe('Test create account', () => {
       {
         owner: '0xowner',
         namespace: AccountNamespace.ETH,
-        symbol: WFAIR,
+        symbol: WFAIR_SYMBOL,
       },
       '1000'
     );
@@ -84,7 +84,7 @@ describe('Test create account', () => {
         {
           owner: '0xfailure',
           namespace: AccountNamespace.ETH,
-          symbol: WFAIR,
+          symbol: WFAIR_SYMBOL,
         },
         '-1'
       )
@@ -120,7 +120,7 @@ describe('Test link account', () => {
     await entityManager.save(AccountEntity, {
       owner_account: walletOwner,
       account_namespace: AccountNamespace.ETH,
-      symbol: WFAIR,
+      symbol: WFAIR_SYMBOL,
       balance: '0',
     });
     await entityManager.save(UserAccount, {
@@ -167,7 +167,7 @@ describe('Test link account', () => {
     await entityManager.save(AccountEntity, {
       owner_account: walletOwner,
       account_namespace: AccountNamespace.ETH,
-      symbol: WFAIR,
+      symbol: WFAIR_SYMBOL,
       balance: '0',
     });
     await entityManager.save(UserAccount, {
@@ -206,7 +206,7 @@ describe('Test user creation', () => {
     await entityManager.insert(AccountEntity, {
       owner_account: userId,
       account_namespace: AccountNamespace.USR,
-      symbol: WFAIR,
+      symbol: WFAIR_SYMBOL,
       balance: '0',
     });
 
@@ -252,7 +252,7 @@ const insertAccount = async (owner: string) => {
     .values({
       owner_account: owner,
       account_namespace: AccountNamespace.ETH,
-      symbol: WFAIR,
+      symbol: WFAIR_SYMBOL,
       balance: '0',
     })
     .returning('*')
@@ -264,7 +264,7 @@ const findAccount = async (owner: string) => {
     where: {
       owner_account: owner,
       account_namespace: AccountNamespace.ETH,
-      symbol: 'WFAIR',
+      symbol: WFAIR_SYMBOL,
     },
   });
 };

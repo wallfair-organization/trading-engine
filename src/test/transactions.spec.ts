@@ -17,12 +17,12 @@ import { ModuleException } from '../lib/modules/exceptions/module-exception';
 import { ExternalTransaction } from '../db/entities/ExternalTransaction';
 import { TransactionQueue } from '../db/entities/TransactionQueue';
 import { ExternalTransactionLog } from '../db/entities/ExternalTransactionLog';
+import { WFAIR_SYMBOL } from '..';
 
 let entityManager: EntityManager;
 let connection: Connection;
 let transactions: Transactions;
 
-const WFAIR = 'WFAIR';
 const externalTransactionModel = {
   originator: ExternalTransactionOriginator.WITHDRAW,
   external_system: 'withdraw',
@@ -47,7 +47,7 @@ const insertExternalTransaction = async (
           amount: '100',
           network_code: NetworkCode.ETH,
           receiver: '0xreceiver',
-          symbol: WFAIR,
+          symbol: WFAIR_SYMBOL,
           namespace: AccountNamespace.ETH,
         },
       })
@@ -108,7 +108,7 @@ describe('Test insert transaction queue', () => {
         amount: '100',
         network_code: NetworkCode.ETH,
         receiver: '0xreceiver',
-        symbol: WFAIR,
+        symbol: WFAIR_SYMBOL,
         namespace: AccountNamespace.ETH,
       }
     );
@@ -130,7 +130,7 @@ describe('Test insert transaction queue', () => {
           amount: null,
           network_code: null,
           receiver: '0xreceiver',
-          symbol: WFAIR,
+          symbol: WFAIR_SYMBOL,
           namespace: AccountNamespace.ETH,
         }
       )

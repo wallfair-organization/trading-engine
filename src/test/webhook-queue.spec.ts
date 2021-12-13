@@ -1,6 +1,6 @@
 import { Connection, createConnection, EntityManager } from 'typeorm';
 import { WebhookQueue } from '../db/entities/WebhookQueue';
-import { WebhookQueueStatus } from '../lib/models/enums/WebhookQueueStatus';
+import { WebhookQueueStatus } from '../lib/models';
 import { Webhook } from '../lib/modules';
 import { ModuleException } from '../lib/modules/exceptions/module-exception';
 import config from './config/db-config';
@@ -80,11 +80,11 @@ describe('Test fetching webhook queue by status', () => {
       request: JSON.stringify({ test: 'list' }),
       request_id: 'request_id',
       request_status: 'fetching',
-      status: WebhookQueueStatus.FAILED,
+      status: WebhookQueueStatus.RESOLVED,
       error: 'Something failed',
     });
 
-    const result = await webhook.getWebhookQueue(WebhookQueueStatus.FAILED);
+    const result = await webhook.getWebhookQueue(WebhookQueueStatus.RESOLVED);
 
     expect(result.length).toBeTruthy();
   });
