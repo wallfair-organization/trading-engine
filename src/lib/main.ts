@@ -14,7 +14,7 @@ export const initDb = async () => {
   return await createConnection(config);
 };
 
-export const toWei = (number: number): BN => {
+export const toWei = (number: number | string): BN => {
   return new BN(number).multipliedBy(ONE.toString()).dp(18);
 };
 
