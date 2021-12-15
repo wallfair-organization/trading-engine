@@ -3,4 +3,5 @@ export enum ExternalTransactionOriginator {
   WITHDRAW = 'withdraw',
   ONRAMP = 'onramp',
   OFFRAMP = 'offramp',
+  CRYPTO = 'crypto',
 }
