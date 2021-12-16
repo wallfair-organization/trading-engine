@@ -94,7 +94,8 @@ export class Transactions extends BaseModule {
     network_code: NetworkCode,
     originator: ExternalTransactionOriginator,
     limit = 10,
-    order: TransactionOrder = TransactionOrder.ASC
+    order: TransactionOrder = TransactionOrder.ASC,
+    skip = 0
   ) {
     return await this.entityManager.find(ExternalTransaction, {
       where: {
@@ -104,6 +105,7 @@ export class Transactions extends BaseModule {
       },
       relations: ['transaction_queue'],
       take: limit,
+      skip: skip,
       order: {
         created_at: order,
       },
