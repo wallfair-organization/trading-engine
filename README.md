@@ -17,8 +17,9 @@
 | POSTGRES_CA          |               | TBD           |
 | DB_QUERY_LOGGING     |               | true          |
 | POOL_MAX_SIZE        | 20            | 20            |
-| POOL_IDLE_TIMEOUT    | 30000         | 30000         |
+| POOL_IDLE_TIMEOUT    | 10000         | 10000         |
 | POOL_MAX_USES        | 7200          | 7200          |
+| CONNECTION_TIMEOUT   | 1000          | 1000          |
 
 For convenience, a `.env.example` is provided. This file can be renamed to `.env` and adjusted.
 
