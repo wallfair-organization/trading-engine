@@ -22,6 +22,13 @@ const config: ConnectionOptions = {
     migrationsDir: './src/db/migrations',
     entitiesDir: './src/db/entities',
   },
+  extra: {
+    max: +process.env.POOL_MAX_SIZE || 20,
+    maxUses: +process.env.POOL_MAX_USES || 7200,
+    idleTimeoutMillis: +process.env.POOL_IDLE_TIMEOUT || 10000,
+    connectionTimeoutMillis: +process.env.POSTGRES_CONNECTION_TIMEOUT || 1000,
+    query_timeout: +process.env.QUERY_TIMEOUT || 1000,
+  },
 };
 
 export default config;

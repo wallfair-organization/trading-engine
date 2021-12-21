@@ -1,6 +1,6 @@
 # trading-engine
 
->Trading engine package to be used for Wallfair trading related microservices
+> Trading engine package to be used for Wallfair trading related microservices
 
 <span class="badge-npmversion"><a href="https://www.npmjs.com/package/@wallfair.io/trading-engine" title="View this project on NPM"><img src="https://img.shields.io/npm/v/@wallfair.io/trading-engine.svg" alt="NPM version" /></a></span>
 
@@ -16,6 +16,11 @@
 | POSTGRES_DISABLE_SSL |               | true          |
 | POSTGRES_CA          |               | TBD           |
 | DB_QUERY_LOGGING     |               | true          |
+| POOL_MAX_SIZE        | 20            | 20            |
+| POOL_IDLE_TIMEOUT    | 10000         | 10000         |
+| POOL_MAX_USES        | 7200          | 7200          |
+| CONNECTION_TIMEOUT   | 1000          | 1000          |
+| QUERY_TIMEOUT        | 1000          | 1000          |
 
 For convenience, a `.env.example` is provided. This file can be renamed to `.env` and adjusted.
 
