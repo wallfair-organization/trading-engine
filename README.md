@@ -20,6 +20,7 @@
 | POOL_IDLE_TIMEOUT    | 10000         | 10000         |
 | POOL_MAX_USES        | 7200          | 7200          |
 | CONNECTION_TIMEOUT   | 1000          | 1000          |
+| QUERY_TIMEOUT        | 1000          | 1000          |
 
 For convenience, a `.env.example` is provided. This file can be renamed to `.env` and adjusted.
 
