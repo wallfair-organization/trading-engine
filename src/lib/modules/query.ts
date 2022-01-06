@@ -6,7 +6,7 @@ export class Query extends BaseModule {
     super(entityManager);
   }
 
-  async query(query: string, params?: any[]) {
+  async query(query: string, params?: unknown[]) {
     return await this.entityManager.query(query, params);
   }
 }
