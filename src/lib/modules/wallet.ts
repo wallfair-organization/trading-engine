@@ -5,17 +5,23 @@ import { BaseModule } from './base-module';
 import { ModuleException } from './exceptions/module-exception';
 import { Transaction } from '../../db/entities/Transaction';
 import { AccountNamespace } from '../models';
+import { WFAIR_SYMBOL } from '../main';
 
 export class Wallet extends BaseModule {
   constructor(entityManager?: EntityManager) {
     super(entityManager);
   }
 
-  async getBalance(owner: string, namespace = AccountNamespace.USR) {
+  async getBalance(
+    owner: string,
+    namespace = AccountNamespace.USR,
+    symbol = WFAIR_SYMBOL
+  ) {
     const user = await this.entityManager.findOne(Account, {
       where: {
         owner_account: owner,
         account_namespace: namespace,
+        symbol,
       },
     });
     return user?.balance || '0';
