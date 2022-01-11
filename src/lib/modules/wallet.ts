@@ -27,6 +27,15 @@ export class Wallet extends BaseModule {
     return user?.balance || '0';
   }
 
+  async getBalances(owner: string, namespace = AccountNamespace.USR) {
+    return await this.entityManager.find(Account, {
+      where: {
+        owner_account: owner,
+        account_namespace: namespace,
+      },
+    });
+  }
+
   async mint(beneficiary: Beneficiary, amount: string) {
     try {
       return await this.updateBalance([{ beneficiary, amount }], {
