@@ -7,7 +7,7 @@ import { Wallet } from '../lib/modules';
 import { ModuleException } from '../lib/modules/exceptions/module-exception';
 import BigNumber from 'bignumber.js';
 import { Transaction } from '../db/entities/Transaction';
-import { WFAIR_SYMBOL } from '..';
+import { toWei, WFAIR_SYMBOL } from '..';
 
 dotenv.config();
 jest.setTimeout(1000000);
@@ -91,11 +91,35 @@ describe('Test balance', () => {
   });
 });
 
+describe('Test balances', () => {
+  test('when user has multiple accounts', async () => {
+    await entityManager.save(Account, {
+      owner_account: USER_ID,
+      account_namespace: AccountNamespace.USR,
+      symbol: 'BFAIR',
+      balance: toWei(100).toString(),
+    });
+    await entityManager.save(Account, {
+      owner_account: USER_ID,
+      account_namespace: AccountNamespace.USR,
+      symbol: 'PFAIR',
+      balance: toWei(200).toString(),
+    });
+
+    const balances = await wallet.getBalances(USER_ID);
+    expect(balances.length).toBe(3);
+  });
+});
+
 describe('Test mint', () => {
   test('when user exists', async () => {
     const amount = 10;
     const account = await entityManager.findOne(Account, {
-      where: { owner_account: USER_ID },
+      where: {
+        owner_account: beneficiary.owner,
+        account_namespace: beneficiary.namespace,
+        symbol: beneficiary.symbol,
+      },
     });
     const result = await wallet.mint(beneficiary, amount.toString());
 
@@ -121,6 +145,8 @@ describe('Test mint', () => {
     const account = await entityManager.findOne(Account, {
       where: {
         owner_account: beneficiary.owner,
+        account_namespace: beneficiary.namespace,
+        symbol: beneficiary.symbol,
       },
     });
     expect(account.balance).toBe('0');
@@ -159,9 +185,9 @@ describe('Test burn', () => {
   test('when user exists', async () => {
     const amount = 5;
     const updated = await entityManager.save(Account, {
-      owner_account: USER_ID,
-      account_namespace: AccountNamespace.USR,
-      symbol: WFAIR_SYMBOL,
+      owner_account: beneficiary.owner,
+      account_namespace: beneficiary.namespace,
+      symbol: beneficiary.symbol,
       balance: amount.toString(),
     });
     const oldBalance = updated.balance;
@@ -202,9 +228,9 @@ describe('Test burn', () => {
 
   test('with exceeded balance', async () => {
     const account = await entityManager.save(Account, {
-      owner_account: USER_ID,
-      account_namespace: AccountNamespace.USR,
-      symbol: WFAIR_SYMBOL,
+      owner_account: beneficiary.owner,
+      account_namespace: beneficiary.namespace,
+      symbol: beneficiary.symbol,
       balance: '20',
     });
 
@@ -213,7 +239,11 @@ describe('Test burn', () => {
     );
 
     const accountAfterBurn = await entityManager.findOne(Account, {
-      where: { owner_account: account.owner_account },
+      where: {
+        owner_account: beneficiary.owner,
+        account_namespace: beneficiary.namespace,
+        symbol: beneficiary.symbol,
+      },
     });
     expect(accountAfterBurn.balance).toBe(account.balance);
   });
