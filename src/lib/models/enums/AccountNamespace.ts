@@ -4,4 +4,5 @@ export enum AccountNamespace {
   BET = 'bet', // trading
   TDL = 'tdl', // tradelite games
   CAS = 'cas', // casino (internal games)
+  LIQ = 'liq', // liquidity
 }
