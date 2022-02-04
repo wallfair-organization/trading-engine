@@ -1,6 +1,6 @@
 {
   "name": "@wallfair.io/trading-engine",
-  "version": "0.1.54",
+  "version": "0.1.55",
   "description": "Trading engine package to be used for Wallfair trading related microservices",
   "main": "build/src/index.js",
   "typings": "build/src/index.d.ts",
