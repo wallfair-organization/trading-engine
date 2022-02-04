@@ -179,6 +179,12 @@ describe('Test mint', () => {
     expect(newAccount).toBeTruthy();
     expect(newAccount.balance).toBe(balance);
   });
+
+  test('when 0 amount', async () => {
+    const result = await wallet.mint(beneficiary, '0');
+    expect(result.identifiers.length).toBeFalsy();
+    expect(result.raw.length).toBeFalsy();
+  });
 });
 
 describe('Test burn', () => {
@@ -246,6 +252,12 @@ describe('Test burn', () => {
       },
     });
     expect(accountAfterBurn.balance).toBe(account.balance);
+  });
+
+  test('when 0 amount', async () => {
+    const result = await wallet.burn(beneficiary, '0');
+    expect(result.identifiers.length).toBeFalsy();
+    expect(result.raw.length).toBeFalsy();
   });
 });
 
@@ -347,5 +359,11 @@ describe('Test transfer', () => {
     await expect(
       wallet.transfer({ ...sender, symbol: 'ETH' }, receiver, '10')
     ).rejects.toThrow(ModuleException);
+  });
+
+  test('when 0 amount', async () => {
+    const result = await wallet.transfer(sender, receiver, '0');
+    expect(result.identifiers.length).toBeFalsy();
+    expect(result.raw.length).toBeFalsy();
   });
 });
