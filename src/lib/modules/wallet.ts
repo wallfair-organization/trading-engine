@@ -5,7 +5,7 @@ import { BaseModule } from './base-module';
 import { ModuleException } from './exceptions/module-exception';
 import { Transaction } from '../../db/entities/Transaction';
 import { AccountNamespace } from '../models';
-import { WFAIR_SYMBOL } from '../main';
+import { BN, WFAIR_SYMBOL } from '../main';
 
 export class Wallet extends BaseModule {
   constructor(entityManager?: EntityManager) {
@@ -37,6 +37,13 @@ export class Wallet extends BaseModule {
   }
 
   async mint(beneficiary: Beneficiary, amount: string) {
+    if (new BN(amount).isZero()) {
+      return {
+        identifiers: [],
+        raw: [],
+      };
+    }
+
     try {
       return await this.updateBalance([{ beneficiary, amount }], {
         sender_namespace: beneficiary.namespace,
@@ -53,6 +60,13 @@ export class Wallet extends BaseModule {
   }
 
   async burn(beneficiary: Beneficiary, amount: string) {
+    if (new BN(amount).isZero()) {
+      return {
+        identifiers: [],
+        raw: [],
+      };
+    }
+
     try {
       return await this.updateBalance([{ beneficiary, amount: '-' + amount }], {
         sender_namespace: beneficiary.namespace,
@@ -73,6 +87,13 @@ export class Wallet extends BaseModule {
     receiver: Beneficiary,
     amountToTransfer: string
   ) {
+    if (new BN(amountToTransfer).isZero()) {
+      return {
+        identifiers: [],
+        raw: [],
+      };
+    }
+
     if (sender.symbol !== receiver.symbol) {
       throw new ModuleException('Transfer not allowed');
     }
