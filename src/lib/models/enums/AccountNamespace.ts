@@ -5,4 +5,5 @@ export enum AccountNamespace {
   TDL = 'tdl', // tradelite games
   CAS = 'cas', // casino (internal games)
   LIQ = 'liq', // liquidity
+  FEE = 'fee', // fee
 }
