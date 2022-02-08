@@ -111,6 +111,78 @@ describe('Test balances', () => {
   });
 });
 
+describe('Test get balances by symbols', () => {
+  test('when found', async () => {
+    await entityManager.insert(Account, [
+      {
+        owner_account: 'bet',
+        account_namespace: AccountNamespace.BET,
+        symbol: '1_bet',
+        balance: toWei('1000').toString(),
+      },
+      {
+        owner_account: 'bet',
+        account_namespace: AccountNamespace.BET,
+        symbol: '0_bet',
+        balance: toWei('1000').toString(),
+      },
+      {
+        owner_account: 'user',
+        account_namespace: AccountNamespace.BET,
+        symbol: '0_bet',
+        balance: toWei('1000').toString(),
+      },
+    ]);
+
+    const balances = await wallet.getBalancesBySymbols(
+      ['0_bet', '1_bet'],
+      AccountNamespace.BET
+    );
+
+    expect(balances.length).toBe(3);
+  });
+
+  test('when found with owner', async () => {
+    await entityManager.insert(Account, [
+      {
+        owner_account: 'bet1',
+        account_namespace: AccountNamespace.BET,
+        symbol: '1_bet1',
+        balance: toWei('1000').toString(),
+      },
+      {
+        owner_account: 'bet1',
+        account_namespace: AccountNamespace.BET,
+        symbol: '0_bet1',
+        balance: toWei('1000').toString(),
+      },
+      {
+        owner_account: 'user',
+        account_namespace: AccountNamespace.BET,
+        symbol: '0_bet1',
+        balance: toWei('1000').toString(),
+      },
+    ]);
+
+    const balances = await wallet.getBalancesBySymbols(
+      ['0_bet1', '1_bet1'],
+      AccountNamespace.BET,
+      'bet1'
+    );
+
+    expect(balances.length).toBe(2);
+  });
+
+  test('when not found', async () => {
+    const balances = await wallet.getBalancesBySymbols(
+      ['0_unknown', '1_unknown'],
+      AccountNamespace.BET
+    );
+
+    expect(balances.length).toBeFalsy();
+  });
+});
+
 describe('Test mint', () => {
   test('when user exists', async () => {
     const amount = 10;

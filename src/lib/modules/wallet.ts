@@ -1,4 +1,4 @@
-import { EntityManager, InsertResult } from 'typeorm';
+import { EntityManager, In, InsertResult, IsNull, Not } from 'typeorm';
 import { Account } from '../../db/entities/Account';
 import { Beneficiary } from '../models/beneficiary';
 import { BaseModule } from './base-module';
@@ -32,6 +32,20 @@ export class Wallet extends BaseModule {
       where: {
         owner_account: owner,
         account_namespace: namespace,
+      },
+    });
+  }
+
+  async getBalancesBySymbols(
+    symbols: string[],
+    namespace: string,
+    owner?: string
+  ) {
+    return await this.entityManager.find(Account, {
+      where: {
+        symbol: In(symbols),
+        account_namespace: namespace,
+        owner_account: owner || Not(IsNull()),
       },
     });
   }
