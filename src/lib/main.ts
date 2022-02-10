@@ -3,6 +3,8 @@ import { BigNumber } from 'bignumber.js';
 import config from '../db/config';
 import { BN } from '..';
 
+export const dbConfig = config;
+
 export const ONE = BigInt(10 ** 18);
 
 export const WFAIR_SYMBOL = 'WFAIR';
