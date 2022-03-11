@@ -1,4 +1,11 @@
-import { EntityManager, FindConditions, In, IsNull, Not } from 'typeorm';
+import {
+  Between,
+  EntityManager,
+  FindConditions,
+  In,
+  IsNull,
+  Not,
+} from 'typeorm';
 import { ExternalTransaction } from '../../db/entities/ExternalTransaction';
 import {
   ExternalTransaction as ExternalTransactionModel,
@@ -168,6 +175,21 @@ export class Transactions extends BaseModule {
       ExternalTransactionLog,
       externalTransactionLogConditions
     );
+  }
+
+  async getExternalTransactionLogsByTimeState(
+    externalTransactionLogConditions: FindConditions<ExternalTransactionLogModel>,
+    dates: Date[]
+  ) {
+    return await this.entityManager.find(ExternalTransactionLog, {
+      where: {
+        ...externalTransactionLogConditions,
+        created_at: Between(
+          new Date(dates[0]).toISOString(),
+          new Date(dates[1]).toISOString()
+        ),
+      },
+    });
   }
 
   async getLastExternalByBlockNumber(
