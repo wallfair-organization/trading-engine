@@ -303,6 +303,29 @@ describe('Test find external transaction log', () => {
   });
 });
 
+describe('Test find external transaction log by time state', () => {
+  test('when it is successful', async () => {
+    const sender = '0xnewuser';
+
+    await entityManager.save(ExternalTransactionLog, {
+      ...externalTransactionModel,
+      sender,
+    });
+
+    const transactionLogs =
+      await transactions.getExternalTransactionLogsByTimeState(
+        {
+          sender,
+        },
+        [
+          new Date(new Date().setHours(0, 0, 0, 0)),
+          new Date(new Date().setHours(23, 59, 59, 0)),
+        ]
+      );
+    expect(transactionLogs.length).toBe(1);
+  });
+});
+
 describe('Test get last external by block number', () => {
   test('when there are entries with block number', async () => {
     const block1 = 1;
