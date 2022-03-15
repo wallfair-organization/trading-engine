@@ -3,4 +3,8 @@ export enum NetworkCode {
   MATIC = 'MATIC',
   BTC = 'BTC',
   LTC = 'LTC',
+  USDT = 'USDT',
+  USDC = 'USDC',
+  DAI = 'DAI',
+  XRP = 'XRP',
 }
