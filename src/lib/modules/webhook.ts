@@ -15,7 +15,8 @@ export class Webhook extends BaseModule {
     request: string,
     request_id: string,
     request_status: string,
-    error: string
+    error: string,
+    status?: WebhookQueueStatus
   ) {
     try {
       return await this.entityManager
@@ -28,7 +29,7 @@ export class Webhook extends BaseModule {
           request_id,
           request_status,
           error,
-          status: WebhookQueueStatus.FAILED,
+          status: status || WebhookQueueStatus.FAILED,
         })
         .onConflict(
           `("request_id", "request_status") DO UPDATE SET error = EXCLUDED.error, attempts = webhook_queue.attempts + 1`
