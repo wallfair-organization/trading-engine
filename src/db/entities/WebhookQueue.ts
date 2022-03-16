@@ -35,6 +35,9 @@ export class WebhookQueue {
   @Column({ default: 1 })
   attempts: number;
 
+  @Column()
+  originator: string;
+
   @CreateDateColumn({ type: 'timestamp with time zone' })
   created_at: Date;
 
