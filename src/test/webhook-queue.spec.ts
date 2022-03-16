@@ -1,6 +1,6 @@
 import { Connection, createConnection, EntityManager } from 'typeorm';
 import { WebhookQueue } from '../db/entities/WebhookQueue';
-import { WebhookQueueStatus } from '../lib/models';
+import { WebhookQueueOriginator, WebhookQueueStatus } from '../lib/models';
 import { Webhook } from '../lib/modules';
 import { ModuleException } from '../lib/modules/exceptions/module-exception';
 import config from './config/db-config';
@@ -28,6 +28,7 @@ const object = {
 describe('Test webhook queue insertion', () => {
   test('when successful', async () => {
     const result = await webhook.insertWebhookQueue(
+      WebhookQueueOriginator.DEPOSIT,
       JSON.stringify(object),
       'request_id',
       'order_successful',
@@ -39,6 +40,7 @@ describe('Test webhook queue insertion', () => {
 
   test('when already exists', async () => {
     const wq = await enttityManager.insert(WebhookQueue, {
+      originator: WebhookQueueOriginator.DEPOSIT,
       request: JSON.stringify({ test: 'list' }),
       request_id: 'request_id',
       request_status: 'existing',
@@ -47,6 +49,7 @@ describe('Test webhook queue insertion', () => {
     });
 
     const result = await webhook.insertWebhookQueue(
+      WebhookQueueOriginator.DEPOSIT,
       JSON.stringify(object),
       'request_id',
       'existing',
@@ -65,6 +68,7 @@ describe('Test webhook queue insertion', () => {
   test('when it fails', async () => {
     await expect(
       webhook.insertWebhookQueue(
+        WebhookQueueOriginator.DEPOSIT,
         undefined,
         'request_id',
         'order_successful',
@@ -77,6 +81,7 @@ describe('Test webhook queue insertion', () => {
 describe('Test fetching webhook queue by status', () => {
   test('when records are found', async () => {
     await enttityManager.save(WebhookQueue, {
+      originator: WebhookQueueOriginator.DEPOSIT,
       request: JSON.stringify({ test: 'list' }),
       request_id: 'request_id',
       request_status: 'fetching',
@@ -84,7 +89,10 @@ describe('Test fetching webhook queue by status', () => {
       error: 'Something failed',
     });
 
-    const result = await webhook.getWebhookQueue(WebhookQueueStatus.RESOLVED);
+    const result = await webhook.getWebhookQueue(
+      WebhookQueueOriginator.DEPOSIT,
+      WebhookQueueStatus.RESOLVED
+    );
 
     expect(result.length).toBeTruthy();
   });
@@ -92,7 +100,10 @@ describe('Test fetching webhook queue by status', () => {
   test('when records do not exist', async () => {
     await enttityManager.delete(WebhookQueue, {});
 
-    const result = await webhook.getWebhookQueue(WebhookQueueStatus.FAILED);
+    const result = await webhook.getWebhookQueue(
+      WebhookQueueOriginator.DEPOSIT,
+      WebhookQueueStatus.FAILED
+    );
 
     expect(result.length).toBeFalsy();
   });
@@ -101,6 +112,7 @@ describe('Test fetching webhook queue by status', () => {
 describe('Test webhook queue update', () => {
   test('when successful', async () => {
     const webhookQueue = await enttityManager.save(WebhookQueue, {
+      originator: WebhookQueueOriginator.DEPOSIT,
       request: JSON.stringify({ test: 'update' }),
       request_id: 'request_id',
       request_status: 'updating',

@@ -1,5 +1,6 @@
 import { EntityManager } from 'typeorm';
 import { WebhookQueue } from '../../db/entities/WebhookQueue';
+import { WebhookQueueOriginator } from '../models';
 import { WebhookQueueStatus } from '../models/enums/WebhookQueueStatus';
 import { BaseModule } from './base-module';
 import { ModuleException } from './exceptions/module-exception';
@@ -10,6 +11,7 @@ export class Webhook extends BaseModule {
   }
 
   async insertWebhookQueue(
+    originator: WebhookQueueOriginator,
     request: string,
     request_id: string,
     request_status: string,
@@ -21,6 +23,7 @@ export class Webhook extends BaseModule {
         .insert()
         .into(WebhookQueue)
         .values({
+          originator,
           request,
           request_id,
           request_status,
@@ -39,10 +42,14 @@ export class Webhook extends BaseModule {
     }
   }
 
-  async getWebhookQueue(status: WebhookQueueStatus) {
+  async getWebhookQueue(
+    originator: WebhookQueueOriginator,
+    status: WebhookQueueStatus
+  ) {
     return await this.entityManager.find(WebhookQueue, {
       where: {
         status,
+        originator,
       },
     });
   }
