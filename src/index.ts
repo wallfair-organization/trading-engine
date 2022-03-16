@@ -14,6 +14,7 @@ export {
   NetworkCode,
   TransactionOrder,
   WebhookQueueStatus,
+  WebhookQueueOriginator,
 } from './lib/models';
 export {
   Account,
