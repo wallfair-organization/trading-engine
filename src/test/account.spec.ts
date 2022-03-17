@@ -47,6 +47,11 @@ describe('Test if user owns an account', () => {
     expect(result).toBe(true);
   });
 
+  test('when different case sensitivity, returns true', async () => {
+    const result = await account.isUserOwner(USER_ID, '0xTESTwallet');
+    expect(result).toBe(true);
+  });
+
   test('when user does not own an account', async () => {
     const result = await account.isUserOwner(USER_ID, '0xunknown');
     expect(result).toBe(false);
