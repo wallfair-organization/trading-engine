@@ -1,5 +1,5 @@
 import { Account as AccountEntity } from '../../db/entities/Account';
-import { EntityManager, InsertResult } from 'typeorm';
+import { EntityManager, InsertResult, Raw } from 'typeorm';
 import { BaseModule } from './base-module';
 import { ModuleException } from './exceptions/module-exception';
 import { AccountNamespace } from '../models/enums/AccountNamespace';
@@ -16,7 +16,9 @@ export class Account extends BaseModule {
     const userAccount = await this.entityManager.findOne(UserAccount, {
       where: {
         user_id: userId,
-        owner_account: account,
+        owner_account: Raw(
+          (alias) => `LOWER(${alias}) = '${account.toLowerCase()}'`
+        ),
         account_namespace: AccountNamespace.ETH,
       },
     });
