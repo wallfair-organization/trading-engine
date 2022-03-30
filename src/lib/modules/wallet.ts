@@ -134,6 +134,30 @@ export class Wallet extends BaseModule {
     }
   }
 
+  async burnAll(
+    owners: string[],
+    namespace = AccountNamespace.USR,
+    symbol = WFAIR_SYMBOL
+  ) {
+    try {
+      return await this.entityManager.update(
+        Account,
+        {
+          owner_account: In(owners),
+          account_namespace: namespace,
+          symbol,
+        },
+        {
+          balance: '0',
+        }
+      );
+    } catch (e) {
+      console.error('BURN ALL ERROR: ', e.message);
+      await this.rollbackTransaction();
+      throw new ModuleException(e.message);
+    }
+  }
+
   private async updateBalance(
     values: { beneficiary: Beneficiary; amount: string }[],
     transaction: Partial<Transaction>

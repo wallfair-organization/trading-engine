@@ -1,4 +1,10 @@
-import { Connection, createConnection, EntityManager, IsNull } from 'typeorm';
+import {
+  Connection,
+  createConnection,
+  EntityManager,
+  In,
+  IsNull,
+} from 'typeorm';
 import config from './config/db-config';
 import dotenv from 'dotenv';
 import { Account } from '../db/entities/Account';
@@ -437,5 +443,35 @@ describe('Test transfer', () => {
     const result = await wallet.transfer(sender, receiver, '0');
     expect(result.identifiers.length).toBeFalsy();
     expect(result.raw.length).toBeFalsy();
+  });
+});
+
+describe('Test burn all', () => {
+  test('when successfully burned', async () => {
+    const owners = ['burned_1', 'burned_2'];
+    for (const o of owners) {
+      await entityManager.save(Account, {
+        owner_account: o,
+        account_namespace: AccountNamespace.USR,
+        symbol: WFAIR_SYMBOL,
+        balance: toWei(100).toString(),
+      });
+    }
+
+    const result = await wallet.burnAll(owners);
+
+    const balances = await entityManager.find(Account, {
+      where: {
+        owner_account: In(owners),
+      },
+    });
+
+    expect(balances.every((b) => b.balance === '0')).toBe(true);
+    expect(result.affected).toBe(2);
+  });
+
+  test('when no accounts to be burned', async () => {
+    const result = await wallet.burnAll(['unknown', 'unknown_2']);
+    expect(result.affected).toBe(0);
   });
 });
