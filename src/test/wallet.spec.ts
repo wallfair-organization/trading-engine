@@ -458,7 +458,11 @@ describe('Test burn all', () => {
       });
     }
 
-    const result = await wallet.burnAll(owners);
+    const result = await wallet.burnAll(
+      owners,
+      AccountNamespace.USR,
+      WFAIR_SYMBOL
+    );
 
     const balances = await entityManager.find(Account, {
       where: {
@@ -471,7 +475,11 @@ describe('Test burn all', () => {
   });
 
   test('when no accounts to be burned', async () => {
-    const result = await wallet.burnAll(['unknown', 'unknown_2']);
+    const result = await wallet.burnAll(
+      ['unknown', 'unknown_2'],
+      AccountNamespace.USR,
+      WFAIR_SYMBOL
+    );
     expect(result.affected).toBe(0);
   });
 });

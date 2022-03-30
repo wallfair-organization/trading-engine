@@ -134,11 +134,7 @@ export class Wallet extends BaseModule {
     }
   }
 
-  async burnAll(
-    owners: string[],
-    namespace = AccountNamespace.USR,
-    symbol = WFAIR_SYMBOL
-  ) {
+  async burnAll(owners: string[], namespace: AccountNamespace, symbol: string) {
     try {
       return await this.entityManager.update(
         Account,
