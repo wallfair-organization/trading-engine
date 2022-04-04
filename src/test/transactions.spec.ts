@@ -17,7 +17,7 @@ import { ModuleException } from '../lib/modules/exceptions/module-exception';
 import { ExternalTransaction } from '../db/entities/ExternalTransaction';
 import { TransactionQueue } from '../db/entities/TransactionQueue';
 import { ExternalTransactionLog } from '../db/entities/ExternalTransactionLog';
-import { WFAIR_SYMBOL } from '..';
+import { BN, toWei, WFAIR_SYMBOL } from '..';
 
 let entityManager: EntityManager;
 let connection: Connection;
@@ -485,5 +485,44 @@ describe('Test find external transaction log by hash', () => {
       await transactions.getExternalTransactionLogByHash('0xunknown');
 
     expect(externalTransaction).toBeFalsy();
+  });
+});
+
+describe('Test sum amount by originator', () => {
+  test('when transactions exist', async () => {
+    const userId = 'user-id';
+    const log = {
+      originator: ExternalTransactionOriginator.DEPOSIT,
+      external_system: 'deposit',
+      status: ExternalTransactionStatus.COMPLETED,
+      external_transaction_id: '0xext',
+      network_code: NetworkCode.ETH,
+      internal_user_id: userId,
+      amount: toWei(100).toString(),
+    };
+    await entityManager.insert(ExternalTransactionLog, {
+      ...log,
+      external_transaction_id: 'ext1',
+    });
+    await entityManager.insert(ExternalTransactionLog, {
+      ...log,
+      external_transaction_id: 'ext2',
+    });
+
+    const response = await transactions.getSumAmountByOriginator(
+      ExternalTransactionOriginator.DEPOSIT,
+      userId
+    );
+
+    expect(new BN(response).isGreaterThan(0)).toBe(true);
+  });
+
+  test('when transactions do not exist', async () => {
+    const response = await transactions.getSumAmountByOriginator(
+      ExternalTransactionOriginator.DEPOSIT,
+      'unknown-id'
+    );
+
+    expect(response).toBe(0);
   });
 });

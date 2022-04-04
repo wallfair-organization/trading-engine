@@ -233,4 +233,21 @@ export class Transactions extends BaseModule {
       },
     });
   }
+
+  async getSumAmountByOriginator(
+    originator: ExternalTransactionOriginator,
+    userId: string
+  ) {
+    const result = await this.entityManager
+      .createQueryBuilder()
+      .select('SUM(amount)')
+      .from(ExternalTransactionLog, 'log')
+      .where({
+        originator,
+        internal_user_id: userId,
+        status: ExternalTransactionStatus.COMPLETED,
+      })
+      .getRawOne();
+    return result.sum || 0;
+  }
 }
