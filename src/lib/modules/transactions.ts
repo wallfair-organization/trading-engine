@@ -245,6 +245,7 @@ export class Transactions extends BaseModule {
       .where({
         originator,
         internal_user_id: userId,
+        status: ExternalTransactionStatus.COMPLETED,
       })
       .getRawOne();
     return result.sum || 0;
