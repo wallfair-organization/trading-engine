@@ -58,6 +58,18 @@ describe('Test if user owns an account', () => {
   });
 });
 
+describe('Test find account by userId', () => {
+  test('when account exists', async () => {
+    const accountEntity = await account.findAccountByUserId(USER_ID);
+    expect(accountEntity).toBeTruthy();
+  });
+
+  test('when account does not exist', async () => {
+    const accountEntity = await account.findAccount('unknown');
+    expect(accountEntity).toBeUndefined();
+  });
+});
+
 describe('Test find account', () => {
   test('when account exists', async () => {
     const accountEntity = await account.findAccount(WALLET_ACCOUNT);

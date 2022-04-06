@@ -25,6 +25,15 @@ export class Account extends BaseModule {
     return !!userAccount;
   }
 
+  async findAccountByUserId(userId: string) {
+    return await this.entityManager.findOne(UserAccount, {
+      where: {
+        user_id: userId,
+        account_namespace: AccountNamespace.ETH,
+      },
+    });
+  }
+
   async findAccount(ethAccount: string) {
     return await this.entityManager.findOne(AccountEntity, {
       where: {
