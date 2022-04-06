@@ -8,6 +8,7 @@ import {
 } from 'typeorm';
 import { ExternalTransaction } from '../../db/entities/ExternalTransaction';
 import {
+  Beneficiary,
   ExternalTransaction as ExternalTransactionModel,
   ExternalTransactionOriginator,
   ExternalTransactionStatus,
@@ -20,6 +21,7 @@ import { BaseModule } from './base-module';
 import { ModuleException } from './exceptions/module-exception';
 import { TransactionQueue } from '../../db/entities/TransactionQueue';
 import { ExternalTransactionLog } from '../../db/entities/ExternalTransactionLog';
+import { Transaction } from '../../db/entities/Transaction';
 
 export class Transactions extends BaseModule {
   constructor(entityManager?: EntityManager) {
@@ -246,6 +248,29 @@ export class Transactions extends BaseModule {
         originator,
         internal_user_id: userId,
         status: ExternalTransactionStatus.COMPLETED,
+      })
+      .getRawOne();
+    return result.sum || 0;
+  }
+
+  async getTransactionSum(
+    sender: Beneficiary,
+    receiver: Beneficiary,
+    dates: Date[]
+  ) {
+    const result = await this.entityManager
+      .createQueryBuilder()
+      .select('SUM(amount)')
+      .from(Transaction, 'transaction')
+      .where({
+        sender_account: sender.owner,
+        sender_namespace: sender.namespace,
+        receiver_account: receiver.owner,
+        receiver_namespace: receiver.namespace,
+        symbol: sender.symbol,
+        ...(dates.length && {
+          executed_at: Between(dates[0].toISOString(), dates[1].toISOString()),
+        }),
       })
       .getRawOne();
     return result.sum || 0;

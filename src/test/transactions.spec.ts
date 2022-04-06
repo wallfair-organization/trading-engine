@@ -17,7 +17,8 @@ import { ModuleException } from '../lib/modules/exceptions/module-exception';
 import { ExternalTransaction } from '../db/entities/ExternalTransaction';
 import { TransactionQueue } from '../db/entities/TransactionQueue';
 import { ExternalTransactionLog } from '../db/entities/ExternalTransactionLog';
-import { BN, toWei, WFAIR_SYMBOL } from '..';
+import { BN, fromWei, toWei, WFAIR_SYMBOL } from '..';
+import { Transaction } from '../db/entities/Transaction';
 
 let entityManager: EntityManager;
 let connection: Connection;
@@ -521,6 +522,68 @@ describe('Test sum amount by originator', () => {
     const response = await transactions.getSumAmountByOriginator(
       ExternalTransactionOriginator.DEPOSIT,
       'unknown-id'
+    );
+
+    expect(response).toBe(0);
+  });
+});
+
+describe('Test internal transactions sum', () => {
+  test('when transactions exist', async () => {
+    const sender = {
+      owner: 'sender-sum',
+      namespace: AccountNamespace.USR,
+      symbol: WFAIR_SYMBOL,
+    };
+    const receiver = {
+      owner: 'receiver-sum',
+      namespace: AccountNamespace.CAS,
+      symbol: WFAIR_SYMBOL,
+    };
+    const symbol = WFAIR_SYMBOL;
+    const now = Date.now();
+    const ms = 24 * 60 * 60 * 1000;
+    const transfers = [
+      { date: new Date(now - 1 * ms), amount: 100 },
+      { date: new Date(now - 2 * ms), amount: 200 },
+      { date: new Date(now - 3 * ms), amount: 300 },
+    ];
+
+    for (const transfer of transfers) {
+      await entityManager.insert(Transaction, {
+        sender_account: sender.owner,
+        sender_namespace: sender.namespace,
+        receiver_account: receiver.owner,
+        receiver_namespace: receiver.namespace,
+        symbol: symbol,
+        amount: toWei(transfer.amount).toString(),
+        executed_at: transfer.date.toISOString(),
+      });
+    }
+
+    const response = await transactions.getTransactionSum(
+      { owner: sender.owner, namespace: sender.namespace, symbol: symbol },
+      { owner: receiver.owner, namespace: receiver.namespace, symbol: symbol },
+      [new Date(now - 2 * ms), new Date()]
+    );
+
+    // only first two transfers
+    expect(fromWei(response).toNumber()).toBe(300);
+  });
+
+  test('when zero', async () => {
+    const response = await transactions.getTransactionSum(
+      {
+        owner: 'unknown-sender',
+        namespace: AccountNamespace.USR,
+        symbol: WFAIR_SYMBOL,
+      },
+      {
+        owner: 'unknown-receiver',
+        namespace: AccountNamespace.CAS,
+        symbol: WFAIR_SYMBOL,
+      },
+      []
     );
 
     expect(response).toBe(0);
